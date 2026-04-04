@@ -40,7 +40,6 @@
   --radius-lg: 20px;
   --radius-xl: 28px;
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: 'SF Mono', 'Courier New', monospace;
 }
 
 * {
@@ -55,11 +54,6 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
-}
-
-h1, h2, h3, h4, .font-bold {
-  font-weight: 600;
-  letter-spacing: -0.01em;
 }
 
 /* Header */
@@ -92,14 +86,12 @@ header {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  letter-spacing: -0.02em;
   margin: 0;
 }
 .brand .sub {
   font-size: 0.75rem;
   opacity: 0.8;
   margin-top: 2px;
-  font-weight: 500;
 }
 
 .header-actions {
@@ -116,21 +108,12 @@ header {
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   color: white;
 }
 .btn-header:hover {
   background: rgba(255,255,255,0.25);
   transform: translateY(-1px);
-}
-
-.pill {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 40px;
-  padding: 6px 16px;
-  font-size: 0.85rem;
-  font-weight: 500;
 }
 
 /* Layout principal */
@@ -148,13 +131,8 @@ header {
 }
 
 @media (max-width: 768px) {
-  .wrap {
-    padding: 0 16px;
-  }
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
+  .wrap { padding: 0 16px; }
+  .grid { grid-template-columns: 1fr; gap: 20px; }
 }
 
 /* Tarjetas */
@@ -164,7 +142,7 @@ header {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s;
 }
 .card:hover {
   box-shadow: var(--shadow-md);
@@ -179,20 +157,18 @@ header {
   font-size: 1.35rem;
   font-weight: 600;
   color: var(--primary);
-  margin: 0;
 }
 .cardHead p {
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin-top: 6px;
-  font-weight: 500;
 }
 
 .cardBody {
   padding: 20px 24px 24px;
 }
 
-/* Estado de sincronización */
+/* Estado sincronización */
 .syncStatus {
   margin-top: 16px;
   padding: 12px 16px;
@@ -200,24 +176,10 @@ header {
   font-size: 0.85rem;
   font-weight: 600;
   border: 1px solid transparent;
-  background: var(--primary-light);
-  color: var(--primary-dark);
 }
-.syncStatus.ok {
-  background: var(--success-light);
-  color: var(--success);
-  border-color: rgba(46,125,50,0.2);
-}
-.syncStatus.warn {
-  background: var(--warning-light);
-  color: #b45309;
-  border-color: rgba(246,195,59,0.3);
-}
-.syncStatus.bad {
-  background: var(--danger-light);
-  color: var(--danger);
-  border-color: rgba(198,40,40,0.2);
-}
+.syncStatus.ok { background: var(--success-light); color: var(--success); }
+.syncStatus.warn { background: var(--warning-light); color: #b45309; }
+.syncStatus.bad { background: var(--danger-light); color: var(--danger); }
 
 /* Rol */
 .roleBox {
@@ -266,7 +228,6 @@ header {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
   text-align: center;
   color: var(--text-secondary);
 }
@@ -274,39 +235,19 @@ header {
   background: var(--primary);
   border-color: var(--primary);
   color: white;
-  box-shadow: var(--shadow-sm);
-}
-.tipoBtn:not(.active):hover {
-  background: var(--bg-primary);
-  border-color: var(--border-medium);
 }
 
 /* Cuentas activas */
-.activasWrap {
-  margin-top: 0;
-}
-.activasTitle {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-}
 .activasGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 12px;
 }
 .mesaBtn {
-  border: none;
   background: transparent;
+  border: none;
   width: 100%;
   cursor: pointer;
-  transition: transform 0.1s ease;
-}
-.mesaBtn:active {
-  transform: scale(0.98);
 }
 .mesaCard {
   background: linear-gradient(135deg, #f9fef9, #eef5ea);
@@ -315,17 +256,14 @@ header {
   padding: 16px 8px;
   text-align: center;
   transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
 }
 .mesaCard:hover {
   border-color: var(--success);
-  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 .mesaText {
   font-weight: 700;
   color: var(--success);
-  font-size: 1rem;
 }
 .mesaAmount {
   font-weight: 800;
@@ -343,7 +281,7 @@ header {
   font-weight: 600;
 }
 
-/* Toast (notificación flotante) */
+/* Toast */
 .toast {
   position: fixed;
   bottom: 30px;
@@ -354,30 +292,19 @@ header {
   padding: 14px 24px;
   border-radius: 60px;
   font-weight: 600;
-  font-size: 0.9rem;
   z-index: 200;
   opacity: 0;
   transition: all 0.3s ease;
   box-shadow: var(--shadow-lg);
   pointer-events: none;
-  white-space: nowrap;
-  max-width: 90vw;
-  white-space: normal;
   text-align: center;
 }
 .toast.show {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
-.toast.success {
-  background: var(--success);
-}
-.toast.error {
-  background: var(--danger);
-}
-.toast.info {
-  background: var(--primary);
-}
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
 
 /* Modales */
 .backdrop {
@@ -401,14 +328,8 @@ header {
   animation: modalSlideIn 0.2s ease;
 }
 @keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .modalHead {
   padding: 20px 24px;
@@ -437,7 +358,6 @@ header {
   border: 1px solid var(--border-medium);
   border-radius: 48px;
   font-size: 1rem;
-  transition: border 0.2s;
 }
 .modalInput:focus {
   outline: none;
@@ -468,9 +388,7 @@ header {
   border-radius: 48px;
   padding: 14px;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
   text-align: center;
 }
 .paymentMethodBtn.selected {
@@ -479,7 +397,7 @@ header {
   color: white;
 }
 
-/* Acordeón */
+/* Detalle productos (acordeón) */
 .detailAccordion {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -495,15 +413,12 @@ header {
   font-weight: 600;
   color: var(--primary);
 }
-.accordionHeader:hover {
-  background: #eef2ff;
-}
 .accordionContent {
   display: none;
   padding: 12px 16px;
   background: white;
   border-top: 1px solid var(--border-light);
-  max-height: 250px;
+  max-height: 300px;
   overflow-y: auto;
 }
 .accordionContent.open {
@@ -516,7 +431,6 @@ header {
 }
 .detailName {
   font-weight: 600;
-  color: var(--text-primary);
 }
 .detailQty {
   color: var(--success);
@@ -526,6 +440,38 @@ header {
   float: right;
   font-weight: 700;
   color: var(--primary);
+}
+.admin-buttons {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.admin-btn {
+  background: none;
+  border: none;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-edit {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.admin-edit:hover {
+  background: var(--primary);
+  color: white;
+}
+.admin-delete {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+.admin-delete:hover {
+  background: var(--danger);
+  color: white;
 }
 
 .totalDisplay {
@@ -550,7 +496,6 @@ header {
   border: none;
   border-radius: 48px;
   font-weight: 700;
-  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -558,26 +503,17 @@ header {
   background: var(--warning);
   color: #5a3b00;
 }
-.actionPrint:hover {
-  background: var(--warning-dark);
-  transform: translateY(-1px);
-}
 .actionPay {
   background: var(--success);
   color: white;
-}
-.actionPay:hover {
-  background: var(--success-dark);
-  transform: translateY(-1px);
 }
 .actionCancel {
   background: white;
   border: 1px solid var(--border-medium);
   color: var(--text-secondary);
 }
-.actionCancel:hover {
-  background: var(--bg-primary);
-  border-color: var(--border-medium);
+.actionBtn:hover {
+  transform: translateY(-1px);
 }
 
 .btn {
@@ -585,32 +521,22 @@ header {
   border-radius: 48px;
   padding: 14px 20px;
   font-weight: 700;
-  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
   width: 100%;
 }
 .btnYellow {
   background: var(--warning);
   color: #5a3b00;
 }
-.btnYellow:hover {
-  background: var(--warning-dark);
-  transform: translateY(-1px);
-}
 .btnBlue {
   background: var(--primary);
   color: white;
-}
-.btnBlue:hover {
-  background: var(--primary-dark);
 }
 
 .emptyState {
   text-align: center;
   padding: 48px 20px;
   color: var(--text-muted);
-  font-weight: 500;
   background: var(--bg-primary);
   border-radius: var(--radius-lg);
   border: 1px dashed var(--border-medium);
@@ -660,7 +586,7 @@ header {
       </div>
       <div class="cardBody">
         <div class="activasWrap">
-          <div class="activasTitle">Cuentas activas</div>
+          <div class="activasTitle" style="font-size:0.7rem; font-weight:700; text-transform:uppercase; margin-bottom:12px;">Cuentas activas</div>
           <div class="activasGrid" id="activasGrid">
             <div class="emptyState">Cargando cuentas...</div>
           </div>
@@ -670,10 +596,10 @@ header {
   </div>
 </div>
 
-<!-- Toast notification -->
+<!-- Toast -->
 <div id="toast" class="toast"></div>
 
-<!-- Modal de acción -->
+<!-- Modal de acción (detalle + cobro) -->
 <div class="backdrop" id="mesaActionBackdrop">
   <div class="modal mesaActionModal">
     <div class="modalHead">
@@ -705,7 +631,7 @@ header {
   </div>
 </div>
 
-<!-- Modal de selección de método de pago -->
+<!-- Modal método de pago -->
 <div class="backdrop" id="paymentMethodBackdrop">
   <div class="modal">
     <div class="modalHead"><h3>Método de pago</h3></div>
@@ -719,6 +645,38 @@ header {
     <div class="modalFoot">
       <button class="btnLight" id="btnCancelPaymentMethod">Cancelar</button>
       <button class="btnBlue" id="btnConfirmPaymentMethod">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar precio -->
+<div class="backdrop" id="editPriceBackdrop">
+  <div class="modal">
+    <div class="modalHead"><h3>Editar precio unitario</h3></div>
+    <div class="modalBody">
+      <label class="modalLabel">Nuevo precio</label>
+      <input class="modalInput" id="editPriceInput" type="number" step="0.01" placeholder="Ej: 45.00">
+    </div>
+    <div class="modalFoot">
+      <button class="btnLight" id="btnCancelPrice">Cancelar</button>
+      <button class="btnBlue" id="btnConfirmPrice">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ajuste total (descuento/recargo) -->
+<div class="backdrop" id="adjustTotalBackdrop">
+  <div class="modal">
+    <div class="modalHead"><h3>Ajustar total de la cuenta</h3></div>
+    <div class="modalBody">
+      <label class="modalLabel">Motivo</label>
+      <input class="modalInput" id="adjustMotivo" placeholder="Ej: Descuento, Recargo, Propina">
+      <label class="modalLabel" style="margin-top:12px;">Valor (puede ser negativo para descuento)</label>
+      <input class="modalInput" id="adjustValor" type="number" step="0.01" placeholder="Ej: -50 o 30">
+    </div>
+    <div class="modalFoot">
+      <button class="btnLight" id="btnCancelAdjust">Cancelar</button>
+      <button class="btnBlue" id="btnConfirmAdjust">Aplicar</button>
     </div>
   </div>
 </div>
@@ -751,7 +709,7 @@ header {
     <div class="modalHead"><h3>Resumen de ventas</h3></div>
     <div class="modalBody">
       <label class="modalLabel">Selecciona una fecha</label>
-      <input class="modalInput" id="fechaResumenInput" type="date" style="font-size:1rem;">
+      <input class="modalInput" id="fechaResumenInput" type="date">
       <p style="margin-top:12px; font-size:0.75rem; color:var(--text-muted);">Se generará un PDF con todas las ventas del día (solo cuentas con ventas > $0).</p>
     </div>
     <div class="modalFoot">
@@ -762,13 +720,11 @@ header {
 </div>
 
 <script>
-// ==================== CÓDIGO CON MEJORAS ====================
-// Configuración Supabase
+// ==================== CONFIGURACIÓN ====================
 const SUPABASE_URL = "https://rcegikeiaxptolrduguc.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjZWdpa2VpYXhwdG9scmR1Z3VjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTMyMDcsImV4cCI6MjA3MTIyOTIwN30.jbPM9F977zeITEmFA_xvVU6SCxlWWVCi3Dx7ZhFfTp8";
 const ADMIN_PIN = "1234";
 
-// Estado global
 
 let comandaActual = null;
 let itemsActuales = [];
@@ -778,8 +734,9 @@ let resumenMesas = {};
 let userRole = "operador";
 let tipoVista = "mesas";
 let selectedPaymentMethod = null;
+let currentEditingItemId = null;
 
-// Precios
+// Precios predefinidos
 const PRECIOS = {
   taco_tripa:38, taco_pastor:28, taco_bistec:28, taco_chorizo:28, taco_higado:28,
   taco_costilla:28, taco_barbacoa:28, taco_alambre:28, taco_combi:38, taco_campechano:38,
@@ -805,7 +762,6 @@ const activasGrid = document.getElementById("activasGrid");
 const roleInfo = document.getElementById("roleInfo");
 const toastEl = document.getElementById("toast");
 
-// Modales
 const mesaActionBackdrop = document.getElementById("mesaActionBackdrop");
 const mesaActionTitle = document.getElementById("mesaActionTitle");
 const mesaActionTotal = document.getElementById("mesaActionTotal");
@@ -823,6 +779,17 @@ const paymentMethodGrid = document.getElementById("paymentMethodGrid");
 const btnCancelPaymentMethod = document.getElementById("btnCancelPaymentMethod");
 const btnConfirmPaymentMethod = document.getElementById("btnConfirmPaymentMethod");
 
+const editPriceBackdrop = document.getElementById("editPriceBackdrop");
+const editPriceInput = document.getElementById("editPriceInput");
+const btnCancelPrice = document.getElementById("btnCancelPrice");
+const btnConfirmPrice = document.getElementById("btnConfirmPrice");
+
+const adjustTotalBackdrop = document.getElementById("adjustTotalBackdrop");
+const adjustMotivo = document.getElementById("adjustMotivo");
+const adjustValor = document.getElementById("adjustValor");
+const btnCancelAdjust = document.getElementById("btnCancelAdjust");
+const btnConfirmAdjust = document.getElementById("btnConfirmAdjust");
+
 const loginBackdrop = document.getElementById("loginBackdrop");
 const loginRol = document.getElementById("loginRol");
 const loginPin = document.getElementById("loginPin");
@@ -835,39 +802,14 @@ const btnTipoMesas = document.getElementById("btnTipoMesas");
 const btnTipoLlevar = document.getElementById("btnTipoLlevar");
 const btnTipoCarrito = document.getElementById("btnTipoCarrito");
 
-// Toast function
-function showToast(message, type = "success") {
-  toastEl.textContent = message;
-  toastEl.className = `toast ${type}`;
-  toastEl.classList.add("show");
-  setTimeout(() => {
-    toastEl.classList.remove("show");
-  }, 3000);
-}
-
-// Funciones auxiliares
-function money(n) {
-  return "$" + Number(n || 0).toFixed(2);
-}
-
-function escapeHtml(s) {
-  return String(s || "").replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
-
-function setSyncStatus(text, type = "warn") {
-  syncStatus.textContent = text;
-  syncStatus.className = `syncStatus ${type}`;
-}
+// ==================== FUNCIONES AUXILIARES ====================
+function money(n) { return "$" + Number(n || 0).toFixed(2); }
+function escapeHtml(s) { return String(s || "").replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+function setSyncStatus(text, type) { syncStatus.textContent = text; syncStatus.className = `syncStatus ${type}`; }
+function showToast(message, type = "success") { toastEl.textContent = message; toastEl.className = `toast ${type}`; toastEl.classList.add("show"); setTimeout(() => toastEl.classList.remove("show"), 3000); }
 
 function getPrecioUnitario(item) {
-  if (item.precio_unitario != null && item.precio_unitario !== "") {
-    return Number(item.precio_unitario);
-  }
+  if (item.precio_unitario != null && item.precio_unitario !== "") return Number(item.precio_unitario);
   return Number(PRECIOS[item.producto_id] || 0);
 }
 
@@ -875,9 +817,10 @@ function getTotalCuenta() {
   return itemsActuales.reduce((sum, item) => sum + (Number(item.qty || 0) * getPrecioUnitario(item)), 0);
 }
 
-function actualizarDetalleModal() {
+// ==================== RENDER DE DETALLE (con botones admin) ====================
+function renderDetalleProductos(container, isModal = false) {
   if (!comandaActual || !itemsActuales.length) {
-    modalDetalleItems.innerHTML = '<div style="padding:12px; text-align:center;">No hay productos en esta cuenta.</div>';
+    container.innerHTML = '<div style="padding:12px; text-align:center;">No hay productos en esta cuenta.</div>';
     return;
   }
   let html = '';
@@ -885,23 +828,186 @@ function actualizarDetalleModal() {
     const precio = getPrecioUnitario(item);
     const importe = Number(item.qty || 0) * precio;
     html += `
-      <div class="detailItem">
+      <div class="detailItem" data-item-id="${item.id}">
         <div class="detailName">${escapeHtml(item.producto_nombre)}</div>
         <div class="detailQty">${item.qty} unidades</div>
         <div class="detailPrice">${money(importe)}</div>
         <div style="clear:both"></div>
         ${item.nota ? `<div style="font-size:12px; color:#666;">• ${escapeHtml(item.nota)}</div>` : ''}
+        ${userRole === "admin" ? `
+          <div class="admin-buttons">
+            <button class="admin-btn admin-edit" onclick="event.stopPropagation(); editarPrecio('${item.id}')">✏️ Precio</button>
+            <button class="admin-btn admin-delete" onclick="event.stopPropagation(); eliminarProducto('${item.id}')">🗑️ Eliminar</button>
+          </div>
+        ` : ''}
       </div>
     `;
   });
-  modalDetalleItems.innerHTML = html;
+  container.innerHTML = html;
 }
 
-async function cargarCuenta(mesa) {
-  if (!supabaseReady) {
-    setSyncStatus("Supabase no configurado", "bad");
-    return false;
+// Función para actualizar el detalle en el modal y en la vista principal (si existe)
+function actualizarDetallesCompletos() {
+  if (comandaActual) {
+    renderDetalleProductos(modalDetalleItems, true);
+    // También actualizar la vista de la derecha si está visible (fuera del modal)
+    const detalleCuentaDiv = document.getElementById("detalleCuenta");
+    if (detalleCuentaDiv) renderVistaPrincipalCuenta(detalleCuentaDiv);
   }
+}
+
+// Render de la cuenta en la columna derecha (para cuando se selecciona una cuenta)
+function renderVistaPrincipalCuenta(container) {
+  if (!comandaActual) {
+    container.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
+    return;
+  }
+  const total = getTotalCuenta();
+  let html = `
+    <div class="mainSummary" style="background:var(--primary-light); border-radius:var(--radius-lg); padding:16px; margin-bottom:16px;">
+      <div style="font-size:1.5rem; font-weight:800;">${escapeHtml(comandaActual.mesa)}</div>
+      <div style="font-size:0.85rem;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
+    </div>
+    <div class="detalle" style="display:grid; gap:12px;">
+  `;
+  itemsActuales.forEach(item => {
+    const precio = getPrecioUnitario(item);
+    const importe = Number(item.qty || 0) * precio;
+    html += `
+      <div style="background:white; border-radius:16px; border:1px solid var(--border-light); padding:12px;">
+        <div style="display:flex; justify-content:space-between;">
+          <span><strong>${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</strong></span>
+          <span>${money(importe)}</span>
+        </div>
+        ${item.nota ? `<div style="font-size:12px; color:#666;">• ${escapeHtml(item.nota)}</div>` : ''}
+        ${userRole === "admin" ? `
+          <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end;">
+            <button class="admin-btn admin-edit" onclick="editarPrecio('${item.id}')">✏️ Precio</button>
+            <button class="admin-btn admin-delete" onclick="eliminarProducto('${item.id}')">🗑️ Eliminar</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  });
+  html += `
+      <div style="background:var(--warning-light); border-radius:20px; padding:16px; margin-top:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:1.2rem; font-weight:700;">Total</span>
+          <strong style="font-size:2rem;">${money(total)}</strong>
+        </div>
+        ${userRole === "admin" ? `
+          <button class="btnLight" style="margin-top:12px; width:100%;" onclick="mostrarAjusteTotal()">⚙️ Ajustar total</button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+// ==================== ADMIN FUNCTIONS ====================
+async function editarPrecio(itemId) {
+  if (userRole !== "admin") return;
+  const item = itemsActuales.find(i => i.id === itemId);
+  if (!item) return;
+  currentEditingItemId = itemId;
+  editPriceInput.value = getPrecioUnitario(item);
+  editPriceBackdrop.style.display = "flex";
+}
+
+async function guardarPrecio() {
+  const newPrice = parseFloat(editPriceInput.value);
+  if (isNaN(newPrice) || newPrice < 0) {
+    showToast("Precio inválido", "error");
+    return;
+  }
+  const { error } = await supabase
+    .from("comandas_items")
+    .update({ precio_unitario: newPrice })
+    .eq("id", currentEditingItemId);
+  if (error) {
+    showToast("Error al actualizar precio", "error");
+    console.error(error);
+  } else {
+    showToast("Precio actualizado", "success");
+    await cargarCuenta(mesaActual);
+    actualizarDetallesCompletos();
+    if (mesaActionBackdrop.style.display === "flex") {
+      const total = getTotalCuenta();
+      mesaActionTotal.textContent = money(total);
+    }
+  }
+  editPriceBackdrop.style.display = "none";
+  currentEditingItemId = null;
+}
+
+async function eliminarProducto(itemId) {
+  if (userRole !== "admin") return;
+  if (!confirm("¿Eliminar este producto de la cuenta?")) return;
+  const { error } = await supabase.from("comandas_items").delete().eq("id", itemId);
+  if (error) {
+    showToast("Error al eliminar", "error");
+    console.error(error);
+  } else {
+    showToast("Producto eliminado", "success");
+    await cargarCuenta(mesaActual);
+    actualizarDetallesCompletos();
+    if (mesaActionBackdrop.style.display === "flex") {
+      const total = getTotalCuenta();
+      mesaActionTotal.textContent = money(total);
+    }
+  }
+}
+
+function mostrarAjusteTotal() {
+  if (userRole !== "admin") return;
+  adjustMotivo.value = "";
+  adjustValor.value = "";
+  adjustTotalBackdrop.style.display = "flex";
+}
+
+async function aplicarAjusteTotal() {
+  const motivo = adjustMotivo.value.trim();
+  const valor = parseFloat(adjustValor.value);
+  if (isNaN(valor) || valor === 0) {
+    showToast("Valor inválido", "error");
+    return;
+  }
+  if (!motivo) {
+    showToast("Escribe un motivo", "error");
+    return;
+  }
+  const nombreAjuste = valor < 0 ? `Descuento: ${motivo}` : `Recargo: ${motivo}`;
+  const { error } = await supabase
+    .from("comandas_items")
+    .insert([{
+      comanda_id: comandaActual.id,
+      producto_id: "ajuste_admin",
+      producto_nombre: nombreAjuste,
+      categoria: "AJUSTE",
+      plato: "General",
+      nota: `Ajuste manual por admin: ${motivo}`,
+      qty: 1,
+      cocina: false,
+      precio_unitario: valor
+    }]);
+  if (error) {
+    showToast("Error al aplicar ajuste", "error");
+    console.error(error);
+  } else {
+    showToast(`Ajuste aplicado: ${nombreAjuste}`, "success");
+    await cargarCuenta(mesaActual);
+    actualizarDetallesCompletas();
+    if (mesaActionBackdrop.style.display === "flex") {
+      const total = getTotalCuenta();
+      mesaActionTotal.textContent = money(total);
+    }
+  }
+  adjustTotalBackdrop.style.display = "none";
+}
+
+// ==================== FUNCIONES DE CARGA Y RENDER ====================
+async function cargarCuenta(mesa) {
+  if (!supabaseReady) { setSyncStatus("Supabase no configurado", "bad"); return false; }
   setSyncStatus(`Cargando ${mesa}...`, "warn");
   mesaActual = mesa;
 
@@ -923,90 +1029,56 @@ async function cargarCuenta(mesa) {
     }
 
     comandaActual = comanda;
-
     const { data: items, error: errItems } = await supabase
       .from("comandas_items")
       .select("*")
       .eq("comanda_id", comanda.id)
       .order("created_at", { ascending: true });
 
-    if (errItems) {
-      setSyncStatus("Error al cargar productos", "bad");
-      return false;
-    }
-
+    if (errItems) { setSyncStatus("Error al cargar productos", "bad"); return false; }
     itemsActuales = items || [];
-    actualizarDetalleModal();
     setSyncStatus(`Cuenta cargada: ${mesa}`, "ok");
     return true;
-  } catch (error) {
-    console.error(error);
-    setSyncStatus("Error al cargar cuenta", "bad");
-    return false;
-  }
+  } catch (error) { console.error(error); setSyncStatus("Error al cargar cuenta", "bad"); return false; }
 }
 
 async function cargarEstadoMesas() {
-  if (!supabaseReady) {
-    activasGrid.innerHTML = `<div class="emptyState">Conectando...</div>`;
-    return;
-  }
-
+  if (!supabaseReady) { activasGrid.innerHTML = `<div class="emptyState">Conectando...</div>`; return; }
   const cuentasVisibles = CUENTAS_FIJAS[tipoVista];
-
   try {
     const { data: comandas, error: errComandas } = await supabase
       .from("comandas")
       .select("id, mesa, estado")
       .eq("estado", "abierta")
       .in("mesa", cuentasVisibles);
-
-    if (errComandas) {
-      activasGrid.innerHTML = `<div class="emptyState">Error al cargar</div>`;
-      return;
-    }
-
+    if (errComandas) { activasGrid.innerHTML = `<div class="emptyState">Error al cargar</div>`; return; }
     const abiertas = comandas || [];
     mesasConCuenta = new Set(abiertas.map(x => x.mesa));
     resumenMesas = {};
-
     for (const com of abiertas) {
       const { data: items } = await supabase
         .from("comandas_items")
         .select("qty, producto_id, precio_unitario")
         .eq("comanda_id", com.id);
-
       const lista = items || [];
-      const total = lista.reduce((acc, it) => {
-        const precio = (it.precio_unitario != null && it.precio_unitario !== "")
-          ? Number(it.precio_unitario)
-          : Number(PRECIOS[it.producto_id] || 0);
-        return acc + (Number(it.qty || 0) * precio);
-      }, 0);
+      const total = lista.reduce((acc, it) => acc + (Number(it.qty || 0) * (it.precio_unitario ?? PRECIOS[it.producto_id] ?? 0)), 0);
       resumenMesas[com.mesa] = { total };
     }
-
     renderMesas();
-  } catch (error) {
-    console.error(error);
-    activasGrid.innerHTML = `<div class="emptyState">Error: ${error.message}</div>`;
-  }
+  } catch (error) { console.error(error); activasGrid.innerHTML = `<div class="emptyState">Error: ${error.message}</div>`; }
 }
 
 function renderMesas() {
   const cuentasVisibles = CUENTAS_FIJAS[tipoVista];
   const cuentasActivas = cuentasVisibles.filter(mesa => mesasConCuenta.has(mesa));
-
   if (!cuentasActivas.length) {
     activasGrid.innerHTML = `<div class="emptyState" style="grid-column:1/-1;">No hay cuentas activas</div>`;
     return;
   }
-
   activasGrid.innerHTML = "";
   cuentasActivas.forEach(mesa => {
     const btn = document.createElement("button");
     btn.className = "mesaBtn";
-    btn.style.cssText = "width:100%;";
     const info = resumenMesas[mesa] || { total: 0 };
     btn.innerHTML = `
       <div class="mesaCard">
@@ -1024,12 +1096,15 @@ function renderMesas() {
         mesaActionPago.value = "";
         mesaActionCambio.textContent = money(0);
         document.getElementById("mesaActionCambioBox").style.background = "var(--bg-primary)";
-        actualizarDetalleModal();
+        renderDetalleProductos(modalDetalleItems, true);
         accordionContent.classList.remove("open");
         accordionHeader.querySelector("span:last-child").textContent = "▼";
         mesaActionBackdrop.style.display = "flex";
+        // Actualizar la vista de la derecha
+        const detalleDiv = document.getElementById("detalleCuenta");
+        if (detalleDiv) renderVistaPrincipalCuenta(detalleDiv);
       } else {
-        showToast(`No se pudo cargar la cuenta de ${mesa}. Verifica que tenga productos.`, "error");
+        showToast(`No se pudo cargar la cuenta de ${mesa}`, "error");
       }
     };
     activasGrid.appendChild(btn);
@@ -1047,100 +1122,49 @@ function calcularCambioModal() {
   else cambioBox.style.background = "var(--bg-primary)";
 }
 
-accordionHeader.addEventListener("click", () => {
-  const isOpen = accordionContent.classList.contains("open");
-  if (isOpen) {
-    accordionContent.classList.remove("open");
-    accordionHeader.querySelector("span:last-child").textContent = "▼";
-  } else {
-    accordionContent.classList.add("open");
-    accordionHeader.querySelector("span:last-child").textContent = "▲";
-  }
-});
-
+// Impresión
 function buildCuentaPrint() {
   if (!comandaActual) return "";
   const total = getTotalCuenta();
   const pago = parseFloat(mesaActionPago.value) || 0;
   const cambio = pago - total;
-  let html = `
-    <div style="text-align:center; font-weight:900; font-size:18px;">GUADALUPE VICTORIA</div>
+  let html = `<div style="text-align:center; font-weight:900; font-size:18px;">GUADALUPE VICTORIA</div>
     <div style="text-align:center; font-weight:900;">${escapeHtml(comandaActual.mesa)}</div>
     <div style="text-align:center;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
     <div style="text-align:center;">${new Date().toLocaleString()}</div>
-    <div style="border-top:1px dashed #000; margin:8px 0;"></div>
-  `;
+    <div style="border-top:1px dashed #000; margin:8px 0;"></div>`;
   itemsActuales.forEach(item => {
     const precio = getPrecioUnitario(item);
     const importe = Number(item.qty || 0) * precio;
-    html += `
-      <div style="margin:6px 0;">
-        <div style="font-weight:900;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-        <div style="display:flex; justify-content:space-between;">
-          <span>${money(precio)} c/u</span>
-          <span>${money(importe)}</span>
-        </div>
-      </div>
-    `;
+    html += `<div style="margin:6px 0;"><div style="font-weight:900;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+      <div style="display:flex; justify-content:space-between;"><span>${money(precio)} c/u</span><span>${money(importe)}</span></div></div>`;
   });
   if (pago > 0) {
-    html += `
-      <div style="border-top:1px dashed #000; margin:8px 0;"></div>
+    html += `<div style="border-top:1px dashed #000; margin:8px 0;"></div>
       <div style="display:flex; justify-content:space-between;"><span>Pago:</span><span>${money(pago)}</span></div>
-      <div style="display:flex; justify-content:space-between;"><span>Cambio:</span><span>${money(cambio)}</span></div>
-    `;
+      <div style="display:flex; justify-content:space-between;"><span>Cambio:</span><span>${money(cambio)}</span></div>`;
   }
-  html += `
-    <div style="border-top:1px dashed #000; margin:8px 0;"></div>
-    <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:900;">
-      <span>TOTAL</span><span>${money(total)}</span>
-    </div>
-    <div style="text-align:center; margin-top:12px;">¡Gracias por su visita!</div>
-  `;
+  html += `<div style="border-top:1px dashed #000; margin:8px 0;"></div>
+    <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:900;"><span>TOTAL</span><span>${money(total)}</span></div>
+    <div style="text-align:center; margin-top:12px;">¡Gracias por su visita!</div>`;
   return html;
 }
 
 function imprimirTicket() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
-  const contenidoTicket = buildCuentaPrint();
-  const html = `
-    <!DOCTYPE html>
-    <html lang="es">
-    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ticket - ${comandaActual.mesa}</title>
-    <style>
-      @page{ size:80mm auto; margin:0; }
-      *{margin:0;padding:0;box-sizing:border-box;}
-      body{font-family:'Courier New',monospace;background:#fff;padding:5px;width:80mm;margin:0 auto;}
-      .ticket{width:100%;font-size:16px;line-height:1.5;}
-      .center{text-align:center;}.bold{font-weight:bold;}.large{font-size:24px;}
-      .divider{border-top:1px dashed #000;margin:8px 0;}
-      .item{margin:6px 0;}.item-name{font-weight:bold;font-size:22px;}
-      .item-price{display:flex;justify-content:space-between;margin-top:2px;font-size:16px;}
-      .total-row{display:flex;justify-content:space-between;font-size:28px;font-weight:bold;margin-top:10px;}
-      .footer{text-align:center;margin-top:12px;font-size:14px;}
-    </style>
-    </head>
-    <body><div class="ticket">${contenidoTicket}</div>
-    <script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close();},1000);},300);};<\/script>
-    </body></html>
-  `;
+  const contenido = buildCuentaPrint();
   const ventana = window.open('', '_blank', 'width=400,height=600');
   if (!ventana) { showToast("Permite ventanas emergentes para imprimir", "error"); return; }
-  ventana.document.write(html);
+  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket</title><style>@page{size:80mm auto;margin:0;}body{font-family:monospace;padding:5px;width:80mm;margin:0 auto;}</style></head><body>${contenido}<script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close();},1000);},300);};<\/script></body></html>`);
   ventana.document.close();
 }
 
+// Cierre de cuenta con método de pago
 async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
-  let pago = montoRecibido;
-  
-  if (paymentMethod !== "efectivo") {
-    pago = total;
-  }
-  
+  let pago = paymentMethod !== "efectivo" ? total : montoRecibido;
   if (pago !== null && pago < total && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
-
   setSyncStatus(`Cerrando ${comandaActual.mesa}...`, "warn");
   try {
     const { error } = await supabase
@@ -1148,34 +1172,26 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
       .update({ estado: "cerrada", updated_at: new Date().toISOString() })
       .eq("id", comandaActual.id);
     if (error) throw error;
-    
-    const mensajeMetodo = {
-      efectivo: "💵 Efectivo",
-      tarjeta: "💳 Tarjeta",
-      transferencia: "🏦 Transferencia"
-    }[paymentMethod];
-    
-    showToast(`✅ Cuenta ${comandaActual.mesa} cerrada. Método: ${mensajeMetodo}`, "success");
-    
+    const metodoTexto = { efectivo: "💵 Efectivo", tarjeta: "💳 Tarjeta", transferencia: "🏦 Transferencia" }[paymentMethod];
+    showToast(`✅ Cuenta ${comandaActual.mesa} cerrada. Método: ${metodoTexto}`, "success");
     mesaActionBackdrop.style.display = "none";
     comandaActual = null;
     itemsActuales = [];
     mesaActual = "";
     await cargarEstadoMesas();
     setSyncStatus("Cuenta cerrada", "ok");
-  } catch (error) { 
-    console.error(error); 
-    showToast("Error al cerrar la cuenta", "error");
-  }
+    const detalleDiv = document.getElementById("detalleCuenta");
+    if (detalleDiv) detalleDiv.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
+  } catch (error) { console.error(error); showToast("Error al cerrar la cuenta", "error"); }
 }
 
+// Flujo de cobro
 function mostrarSeleccionMetodo() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   selectedPaymentMethod = null;
   document.querySelectorAll('.paymentMethodBtn').forEach(btn => btn.classList.remove('selected'));
   paymentMethodBackdrop.style.display = "flex";
 }
-
 paymentMethodGrid.addEventListener("click", (e) => {
   const btn = e.target.closest(".paymentMethodBtn");
   if (!btn) return;
@@ -1183,225 +1199,245 @@ paymentMethodGrid.addEventListener("click", (e) => {
   btn.classList.add('selected');
   selectedPaymentMethod = btn.getAttribute("data-method");
 });
-
 btnConfirmPaymentMethod.onclick = () => {
-  if (!selectedPaymentMethod) {
-    showToast("Selecciona un método de pago", "error");
-    return;
-  }
+  if (!selectedPaymentMethod) { showToast("Selecciona un método de pago", "error"); return; }
   paymentMethodBackdrop.style.display = "none";
-  
   if (selectedPaymentMethod === "efectivo") {
     mesaActionBackdrop.style.display = "flex";
-    const originalPayHandler = mesaActionPayBtn.onclick;
+    const originalHandler = mesaActionPayBtn.onclick;
     mesaActionPayBtn.onclick = async () => {
       const pago = parseFloat(mesaActionPago.value) || 0;
       await cerrarCuentaConMetodo("efectivo", pago);
-      mesaActionPayBtn.onclick = originalPayHandler;
+      mesaActionPayBtn.onclick = originalHandler;
     };
   } else {
     cerrarCuentaConMetodo(selectedPaymentMethod, getTotalCuenta());
     mesaActionBackdrop.style.display = "none";
   }
 };
-
-btnCancelPaymentMethod.onclick = () => {
-  paymentMethodBackdrop.style.display = "none";
-  selectedPaymentMethod = null;
-};
-
-mesaActionPayBtn.onclick = () => mostrarSeleccionMetodo();
+btnCancelPaymentMethod.onclick = () => paymentMethodBackdrop.style.display = "none";
+mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPago.addEventListener("input", calcularCambioModal);
 mesaActionPrintBtn.onclick = imprimirTicket;
 
-// Funciones resumen PDF (con TODOS los productos)
+// Resumen PDF
 function getRangoLocalDia(fechaStr) {
-  const [y,m,d]=fechaStr.split("-").map(Number);
-  const inicio=new Date(y,m-1,d,0,0,0,0);
-  const fin=new Date(y,m-1,d,23,59,59,999);
-  return {inicioISO:inicio.toISOString(), finISO:fin.toISOString(), fechaBonita:inicio.toLocaleDateString("es-MX")};
+  const [y,m,d] = fechaStr.split("-").map(Number);
+  const inicio = new Date(y,m-1,d,0,0,0,0);
+  const fin = new Date(y,m-1,d,23,59,59,999);
+  return { inicioISO: inicio.toISOString(), finISO: fin.toISOString(), fechaBonita: inicio.toLocaleDateString("es-MX") };
 }
 
 async function obtenerDatosResumenDia(fechaStr) {
-  if(!supabaseReady) return null;
-  const {inicioISO,finISO,fechaBonita}=getRangoLocalDia(fechaStr);
-  const {data:comandas}=await supabase.from("comandas").select("id,mesa,mesero,estado,updated_at").eq("estado","cerrada").gte("updated_at",inicioISO).lte("updated_at",finISO);
-  if(!comandas?.length) return {fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[]};
-  const ids=comandas.map(c=>c.id);
-  let items=[];
-  if(ids.length){
-    const {data:it}=await supabase.from("comandas_items").select("comanda_id,producto_nombre,qty,precio_unitario,producto_id").in("comanda_id",ids);
-    items=it||[];
+  if (!supabaseReady) return null;
+  const { inicioISO, finISO, fechaBonita } = getRangoLocalDia(fechaStr);
+  const { data: comandas } = await supabase.from("comandas").select("id,mesa,mesero,estado,updated_at").eq("estado","cerrada").gte("updated_at",inicioISO).lte("updated_at",finISO);
+  if (!comandas?.length) return { fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[] };
+  const ids = comandas.map(c=>c.id);
+  let items = [];
+  if (ids.length) {
+    const { data: it } = await supabase.from("comandas_items").select("comanda_id,producto_nombre,qty,precio_unitario,producto_id").in("comanda_id",ids);
+    items = it||[];
   }
-  const itemsPorComanda={};
-  items.forEach(it=>{ if(!itemsPorComanda[it.comanda_id]) itemsPorComanda[it.comanda_id]=[]; itemsPorComanda[it.comanda_id].push(it); });
-  const comandasConTotal=comandas.map(com=>{
-    const arr=itemsPorComanda[com.id]||[];
-    const total=arr.reduce((acc,it)=>{ const precio=(it.precio_unitario??PRECIOS[it.producto_id])||0; return acc+(it.qty*precio); },0);
-    return {...com,total};
+  const itemsPorComanda = {};
+  items.forEach(it => { if (!itemsPorComanda[it.comanda_id]) itemsPorComanda[it.comanda_id] = []; itemsPorComanda[it.comanda_id].push(it); });
+  const comandasConTotal = comandas.map(com => {
+    const arr = itemsPorComanda[com.id]||[];
+    const total = arr.reduce((acc,it)=> acc + (it.qty * (it.precio_unitario ?? PRECIOS[it.producto_id] ?? 0)), 0);
+    return {...com, total};
   }).filter(c=>c.total>0);
-  if(!comandasConTotal.length) return {fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[]};
+  if (!comandasConTotal.length) return { fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[] };
   let totalGeneral=0;
-  const porTipoCuenta={mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}};
-  const porMesero={};
-  const productos={};
-  const detalleComandas=[];
-  comandasConTotal.forEach(com=>{
-    const arr=itemsPorComanda[com.id]||[];
-    const total=com.total;
-    totalGeneral+=total;
-    const mesero=com.mesero||"Sin mesero";
-    if(!porMesero[mesero]) porMesero[mesero]={total:0,comandas:0};
-    porMesero[mesero].total+=total; porMesero[mesero].comandas+=1;
-    const mesaNombre=(com.mesa||"").toLowerCase();
-    if(mesaNombre.includes("para llevar")) porTipoCuenta.llevar.total+=total, porTipoCuenta.llevar.comandas+=1;
-    else if(mesaNombre.includes("carrito")) porTipoCuenta.carrito.total+=total, porTipoCuenta.carrito.comandas+=1;
-    else porTipoCuenta.mesas.total+=total, porTipoCuenta.mesas.comandas+=1;
-    arr.forEach(it=>{
-      const nombre=it.producto_nombre||"Producto";
-      if(!productos[nombre]) productos[nombre]={qty:0,total:0};
-      productos[nombre].qty+=it.qty;
-      productos[nombre].total+=it.qty*((it.precio_unitario??PRECIOS[it.producto_id])||0);
+  const porTipoCuenta = { mesas:{total:0,comandas:0}, llevar:{total:0,comandas:0}, carrito:{total:0,comandas:0} };
+  const porMesero = {};
+  const productos = {};
+  const detalleComandas = [];
+  comandasConTotal.forEach(com => {
+    const arr = itemsPorComanda[com.id]||[];
+    const total = com.total;
+    totalGeneral += total;
+    const mesero = com.mesero||"Sin mesero";
+    if (!porMesero[mesero]) porMesero[mesero] = { total:0, comandas:0 };
+    porMesero[mesero].total += total; porMesero[mesero].comandas++;
+    const mesaNombre = (com.mesa||"").toLowerCase();
+    if (mesaNombre.includes("para llevar")) porTipoCuenta.llevar.total += total, porTipoCuenta.llevar.comandas++;
+    else if (mesaNombre.includes("carrito")) porTipoCuenta.carrito.total += total, porTipoCuenta.carrito.comandas++;
+    else porTipoCuenta.mesas.total += total, porTipoCuenta.mesas.comandas++;
+    arr.forEach(it => {
+      const nombre = it.producto_nombre||"Producto";
+      if (!productos[nombre]) productos[nombre] = { qty:0, total:0 };
+      productos[nombre].qty += it.qty;
+      productos[nombre].total += it.qty * (it.precio_unitario ?? PRECIOS[it.producto_id] ?? 0);
     });
-    detalleComandas.push({mesa:com.mesa,mesero,total,updated_at:com.updated_at});
+    detalleComandas.push({ mesa:com.mesa, mesero, total, updated_at:com.updated_at });
   });
   detalleComandas.sort((a,b)=>b.total-a.total);
-  const rankingMeseros=Object.entries(porMesero).sort((a,b)=>b[1].total-a[1].total);
-  // Todos los productos, sin limitar a 15
-  const todosProductos = Object.entries(productos).sort((a,b)=>b[1].total - a[1].total);
-  return {fechaBonita, totalGeneral, totalComandas:comandasConTotal.length, porTipoCuenta, rankingMeseros, todosProductos, detalleComandas};
+  const rankingMeseros = Object.entries(porMesero).sort((a,b)=>b[1].total-a[1].total);
+  const todosProductos = Object.entries(productos).sort((a,b)=>b[1].total-a[1].total);
+  return { fechaBonita, totalGeneral, totalComandas:comandasConTotal.length, porTipoCuenta, rankingMeseros, todosProductos, detalleComandas };
 }
 
-async function descargarResumenPDF(fechaStr){
-  if(!fechaStr){ showToast("Selecciona una fecha", "error"); return; }
-  if(!window.jspdf?.jsPDF){ showToast("No se pudo cargar la librería PDF", "error"); return; }
-  const data=await obtenerDatosResumenDia(fechaStr);
-  if(!data) return;
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:"p",unit:"pt",format:"a4"});
-  const pageWidth=doc.internal.pageSize.getWidth();
-  const pageHeight=doc.internal.pageSize.getHeight();
-  const marginX=40, topSafeY=56;
-  const contentWidth=pageWidth-(marginX*2);
-  const nowStr=new Date().toLocaleString("es-MX");
-  const avgTicket=data.totalComandas?(data.totalGeneral/data.totalComandas):0;
-  const colors={navy:[20,55,105],blue:[21,101,192],sky:[236,244,253],line:[216,228,243],text:[25,40,60],muted:[95,115,140],zebra:[248,251,255]};
-  const formatMoney=(n)=>money(n);
-  const drawHeader=()=>{
+async function descargarResumenPDF(fechaStr) {
+  if (!fechaStr) { showToast("Selecciona una fecha", "error"); return; }
+  if (!window.jspdf?.jsPDF) { showToast("No se pudo cargar la librería PDF", "error"); return; }
+  const data = await obtenerDatosResumenDia(fechaStr);
+  if (!data) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:"p", unit:"pt", format:"a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const marginX = 40, topSafeY = 56;
+  const contentWidth = pageWidth - (marginX*2);
+  const nowStr = new Date().toLocaleString("es-MX");
+  const avgTicket = data.totalComandas ? (data.totalGeneral/data.totalComandas) : 0;
+  const colors = { navy:[20,55,105], blue:[21,101,192], sky:[236,244,253], line:[216,228,243], text:[25,40,60], muted:[95,115,140], zebra:[248,251,255] };
+  const formatMoney = (n) => money(n);
+  const drawHeader = () => {
     doc.setFillColor(...colors.navy); doc.rect(0,0,pageWidth,32,"F");
     doc.setDrawColor(...colors.line); doc.setLineWidth(1); doc.roundedRect(marginX,topSafeY-18,contentWidth,92,12,12,"S");
     doc.setFont("helvetica","bold"); doc.setFontSize(18); doc.setTextColor(...colors.text); doc.text("Resumen de ventas del día",marginX+14,topSafeY+8);
     doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(...colors.muted); doc.text(`Fecha: ${data.fechaBonita}`,marginX+14,topSafeY+28);
     doc.text(`Generado: ${nowStr}`,marginX+14,topSafeY+44);
-    if(data.totalComandas===0) doc.text("*Nota: No se registraron ventas en esta fecha",marginX+14,topSafeY+60);
+    if (data.totalComandas===0) doc.text("*Nota: No se registraron ventas en esta fecha",marginX+14,topSafeY+60);
   };
-  const drawKpiCard=(x,y,w,h,label,value)=>{
+  const drawKpiCard = (x,y,w,h,label,value) => {
     doc.setFillColor(...colors.sky); doc.setDrawColor(...colors.line); doc.roundedRect(x,y,w,h,10,10,"FD");
     doc.setFont("helvetica","bold"); doc.setFontSize(9.5); doc.setTextColor(...colors.muted); doc.text(label.toUpperCase(),x+10,y+16);
     doc.setFont("helvetica","bold"); doc.setFontSize(14); doc.setTextColor(...colors.text); doc.text(String(value),x+10,y+35);
   };
-  const buildTableTheme=(fontSize=10)=>({
-    margin:{left:marginX,right:marginX},
-    headStyles:{fillColor:colors.blue,textColor:[255,255,255],fontStyle:"bold",fontSize,halign:"left"},
-    bodyStyles:{textColor:colors.text,fontSize,lineColor:colors.line,lineWidth:0.5},
-    alternateRowStyles:{fillColor:colors.zebra},
-    styles:{cellPadding:{top:6,right:6,bottom:6,left:6},overflow:"linebreak",valign:"middle"},
-    tableLineColor:colors.line,tableLineWidth:0.6
+  const buildTableTheme = (fontSize=10) => ({
+    margin: { left:marginX, right:marginX },
+    headStyles: { fillColor:colors.blue, textColor:[255,255,255], fontStyle:"bold", fontSize, halign:"left" },
+    bodyStyles: { textColor:colors.text, fontSize, lineColor:colors.line, lineWidth:0.5 },
+    alternateRowStyles: { fillColor:colors.zebra },
+    styles: { cellPadding: { top:6, right:6, bottom:6, left:6 }, overflow:"linebreak", valign:"middle" },
+    tableLineColor: colors.line, tableLineWidth: 0.6
   });
   drawHeader();
-  const kpiY=topSafeY+88; const gap=10; const cardW=(contentWidth-(gap*2))/3; const cardH=48;
+  const kpiY = topSafeY+88; const gap=10; const cardW = (contentWidth-(gap*2))/3; const cardH=48;
   drawKpiCard(marginX,kpiY,cardW,cardH,"Total vendido",formatMoney(data.totalGeneral));
   drawKpiCard(marginX+cardW+gap,kpiY,cardW,cardH,"Cuentas cerradas",data.totalComandas);
   drawKpiCard(marginX+(cardW+gap)*2,kpiY,cardW,cardH,"Ticket promedio",formatMoney(avgTicket));
-  let y=kpiY+cardH+26;
-  if(data.totalComandas===0){
+  let y = kpiY+cardH+26;
+  if (data.totalComandas===0) {
     doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.text("No hay ventas registradas en esta fecha.",marginX,y+30);
-    const totalPages=doc.internal.getNumberOfPages();
+    const totalPages = doc.internal.getNumberOfPages();
     for(let i=1;i<=totalPages;i++){ doc.setPage(i); doc.setFontSize(9); doc.setTextColor(...colors.muted); doc.text(`Página ${i} de ${totalPages}`,pageWidth-marginX,pageHeight-16,{align:"right"}); }
     doc.save(`resumen_${data.fechaStr}_sin_ventas.pdf`);
     return;
   }
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Por tipo de cuenta",marginX,y);
   y+=10;
-  doc.autoTable({...buildTableTheme(10),startY:y,head:[["Tipo","Cuentas","Total"]],body:[["Mesas",String(data.porTipoCuenta.mesas.comandas),formatMoney(data.porTipoCuenta.mesas.total)],["Para llevar",String(data.porTipoCuenta.llevar.comandas),formatMoney(data.porTipoCuenta.llevar.total)],["Carrito afuera",String(data.porTipoCuenta.carrito.comandas),formatMoney(data.porTipoCuenta.carrito.total)]],columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}}});
-  y=doc.lastAutoTable.finalY+22;
+  doc.autoTable({...buildTableTheme(10), startY:y, head:[["Tipo","Cuentas","Total"]], body:[["Mesas",String(data.porTipoCuenta.mesas.comandas),formatMoney(data.porTipoCuenta.mesas.total)],["Para llevar",String(data.porTipoCuenta.llevar.comandas),formatMoney(data.porTipoCuenta.llevar.total)],["Carrito afuera",String(data.porTipoCuenta.carrito.comandas),formatMoney(data.porTipoCuenta.carrito.total)]], columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
+  y = doc.lastAutoTable.finalY+22;
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Ventas por mesero",marginX,y);
   y+=10;
-  doc.autoTable({...buildTableTheme(10),startY:y,head:[["Mesero","Cuentas","Total"]],body:data.rankingMeseros.length?data.rankingMeseros.map(([m,i])=>[m,String(i.comandas),formatMoney(i.total)]):[["Sin registros","0",formatMoney(0)]],columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}}});
-  y=doc.lastAutoTable.finalY+22;
+  doc.autoTable({...buildTableTheme(10), startY:y, head:[["Mesero","Cuentas","Total"]], body:data.rankingMeseros.length?data.rankingMeseros.map(([m,i])=>[m,String(i.comandas),formatMoney(i.total)]):[["Sin registros","0",formatMoney(0)]], columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
+  y = doc.lastAutoTable.finalY+22;
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Todas las comandas cerradas del día (con ventas > $0)",marginX,y);
   y+=10;
-  doc.autoTable({...buildTableTheme(9.5),startY:y,head:[["Cuenta","Mesero","Hora cierre","Total"]],body:data.detalleComandas.map(c=>[c.mesa,c.mesero,new Date(c.updated_at).toLocaleTimeString(),formatMoney(c.total)]),columnStyles:{2:{halign:"center",cellWidth:90},3:{halign:"right",cellWidth:90}}});
-  y=doc.lastAutoTable.finalY+22;
+  doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Cuenta","Mesero","Hora cierre","Total"]], body:data.detalleComandas.map(c=>[c.mesa,c.mesero,new Date(c.updated_at).toLocaleTimeString(),formatMoney(c.total)]), columnStyles:{2:{halign:"center",cellWidth:90},3:{halign:"right",cellWidth:90}} });
+  y = doc.lastAutoTable.finalY+22;
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Todos los productos vendidos del día",marginX,y);
   y+=10;
-  // Mostrar todos los productos (sin límite)
-  doc.autoTable({...buildTableTheme(9.5),startY:y,head:[["Producto","Cantidad","Total"]],body:data.todosProductos.map(([n,i])=>[n,String(i.qty),formatMoney(i.total)]),columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}}});
-  const totalPages=doc.internal.getNumberOfPages();
+  doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Producto","Cantidad","Total"]], body:data.todosProductos.map(([n,i])=>[n,String(i.qty),formatMoney(i.total)]), columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
+  const totalPages = doc.internal.getNumberOfPages();
   for(let i=1;i<=totalPages;i++){ doc.setPage(i); doc.setFontSize(9); doc.setTextColor(...colors.muted); doc.text(`Página ${i} de ${totalPages}`,pageWidth-marginX,pageHeight-16,{align:"right"}); }
   doc.save(`resumen_ventas_${data.fechaStr}.pdf`);
   showToast("✅ PDF generado correctamente", "success");
 }
 
-function openFechaResumenModal(){
-  const hoy=new Date(); const yyyy=hoy.getFullYear(); const mm=String(hoy.getMonth()+1).padStart(2,"0"); const dd=String(hoy.getDate()).padStart(2,"0");
-  fechaResumenInput.value=`${yyyy}-${mm}-${dd}`;
-  fechaResumenBackdrop.style.display="flex";
+function openFechaResumenModal() {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear(), mm = String(hoy.getMonth()+1).padStart(2,"0"), dd = String(hoy.getDate()).padStart(2,"0");
+  fechaResumenInput.value = `${yyyy}-${mm}-${dd}`;
+  fechaResumenBackdrop.style.display = "flex";
 }
-function closeFechaResumenModal(){ fechaResumenBackdrop.style.display="none"; }
+function closeFechaResumenModal() { fechaResumenBackdrop.style.display = "none"; }
 
-async function cambiarTipoVista(nuevoTipo){
-  tipoVista=nuevoTipo;
-  mesaActual="";
-  comandaActual=null;
-  itemsActuales=[];
-  btnTipoMesas.classList.toggle("active",tipoVista==="mesas");
-  btnTipoLlevar.classList.toggle("active",tipoVista==="llevar");
-  btnTipoCarrito.classList.toggle("active",tipoVista==="carrito");
+async function cambiarTipoVista(nuevoTipo) {
+  tipoVista = nuevoTipo;
+  mesaActual = "";
+  comandaActual = null;
+  itemsActuales = [];
+  btnTipoMesas.classList.toggle("active", tipoVista==="mesas");
+  btnTipoLlevar.classList.toggle("active", tipoVista==="llevar");
+  btnTipoCarrito.classList.toggle("active", tipoVista==="carrito");
   await cargarEstadoMesas();
+  const detalleDiv = document.getElementById("detalleCuenta");
+  if (detalleDiv) detalleDiv.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
 }
 
-// Event listeners adicionales
-mesaActionPago.addEventListener("keypress",(e)=>{ if(e.key==="Enter"){ e.preventDefault(); mesaActionPago.blur(); } });
-document.getElementById("btnCambiarModo").onclick=()=>loginBackdrop.style.display="flex";
-document.getElementById("btnCerrarLogin").onclick=()=>loginBackdrop.style.display="none";
-document.getElementById("btnEntrarLogin").onclick=()=>{
-  const rol=loginRol.value;
-  if(rol==="admin" && loginPin.value!==ADMIN_PIN){ showToast("PIN incorrecto", "error"); return; }
-  userRole=rol;
-  roleInfo.textContent=`👤 Modo: ${userRole==="admin"?"Administrador 👑":"Operador"}`;
-  loginBackdrop.style.display="none";
+// Event listeners
+accordionHeader.addEventListener("click", () => {
+  const isOpen = accordionContent.classList.contains("open");
+  if (isOpen) { accordionContent.classList.remove("open"); accordionHeader.querySelector("span:last-child").textContent = "▼"; }
+  else { accordionContent.classList.add("open"); accordionHeader.querySelector("span:last-child").textContent = "▲"; }
+});
+document.getElementById("btnCambiarModo").onclick = () => loginBackdrop.style.display = "flex";
+document.getElementById("btnCerrarLogin").onclick = () => loginBackdrop.style.display = "none";
+document.getElementById("btnEntrarLogin").onclick = () => {
+  const rol = loginRol.value;
+  if (rol === "admin" && loginPin.value !== ADMIN_PIN) { showToast("PIN incorrecto", "error"); return; }
+  userRole = rol;
+  roleInfo.textContent = `👤 Modo: ${userRole==="admin"?"Administrador 👑":"Operador"}`;
+  loginBackdrop.style.display = "none";
   showToast(`Modo ${userRole==="admin"?"Administrador":"Operador"} activado`, "success");
+  if (comandaActual) {
+    actualizarDetallesCompletos();
+    if (mesaActionBackdrop.style.display === "flex") renderDetalleProductos(modalDetalleItems, true);
+  }
 };
-document.getElementById("btnActualizarMesas").onclick=async()=>{ await cargarEstadoMesas(); };
-document.getElementById("btnResumen").onclick=openFechaResumenModal;
-document.getElementById("btnFechaResumenCancelar").onclick=closeFechaResumenModal;
-document.getElementById("btnFechaResumenEnviar").onclick=async()=>{
-  const fecha=fechaResumenInput.value;
-  if(!fecha){ showToast("Selecciona una fecha", "error"); return; }
-  const btnEnviar=document.getElementById("btnFechaResumenEnviar");
-  const txt=btnEnviar.textContent;
-  btnEnviar.textContent="⏳ Generando PDF...";
-  btnEnviar.disabled=true;
-  try{ await descargarResumenPDF(fecha); closeFechaResumenModal(); }catch(e){ console.error(e); showToast("Error al generar PDF", "error"); }
-  finally{ btnEnviar.textContent=txt; btnEnviar.disabled=false; }
+document.getElementById("btnActualizarMesas").onclick = async () => { await cargarEstadoMesas(); if (mesaActual) await cargarCuenta(mesaActual); };
+document.getElementById("btnResumen").onclick = openFechaResumenModal;
+document.getElementById("btnFechaResumenCancelar").onclick = closeFechaResumenModal;
+document.getElementById("btnFechaResumenEnviar").onclick = async () => {
+  const fecha = fechaResumenInput.value;
+  if (!fecha) { showToast("Selecciona una fecha", "error"); return; }
+  const btn = document.getElementById("btnFechaResumenEnviar");
+  const originalText = btn.textContent;
+  btn.textContent = "⏳ Generando PDF...";
+  btn.disabled = true;
+  try { await descargarResumenPDF(fecha); closeFechaResumenModal(); } catch(e) { console.error(e); showToast("Error al generar PDF", "error"); }
+  finally { btn.textContent = originalText; btn.disabled = false; }
 };
-loginRol.addEventListener("change",()=>{ pinWrap.style.display=loginRol.value==="admin"?"block":"none"; });
-btnTipoMesas.onclick=()=>cambiarTipoVista("mesas");
-btnTipoLlevar.onclick=()=>cambiarTipoVista("llevar");
-btnTipoCarrito.onclick=()=>cambiarTipoVista("carrito");
+loginRol.addEventListener("change", () => { pinWrap.style.display = loginRol.value === "admin" ? "block" : "none"; });
+btnTipoMesas.onclick = () => cambiarTipoVista("mesas");
+btnTipoLlevar.onclick = () => cambiarTipoVista("llevar");
+btnTipoCarrito.onclick = () => cambiarTipoVista("carrito");
+
+// Admin modals
+btnCancelPrice.onclick = () => editPriceBackdrop.style.display = "none";
+btnConfirmPrice.onclick = guardarPrecio;
+btnCancelAdjust.onclick = () => adjustTotalBackdrop.style.display = "none";
+btnConfirmAdjust.onclick = aplicarAjusteTotal;
+
+// Exponer funciones globales para admin
+window.editarPrecio = editarPrecio;
+window.eliminarProducto = eliminarProducto;
+window.mostrarAjusteTotal = mostrarAjusteTotal;
 
 // Inicialización
-if(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase){
-  try{
-    supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-    supabaseReady=true;
+if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+  try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseReady = true;
     setSyncStatus("Supabase conectado","ok");
-  }catch(e){ console.error(e); setSyncStatus("Error de conexión","bad"); }
-}else{ setSyncStatus("Configuración pendiente","warn"); }
-roleInfo.textContent="👤 Modo: Operador";
-(async function init(){ await cargarEstadoMesas(); })();
+  } catch(e) { console.error(e); setSyncStatus("Error de conexión","bad"); }
+} else { setSyncStatus("Configuración pendiente","warn"); }
+roleInfo.textContent = "👤 Modo: Operador";
+(async function init() {
+  await cargarEstadoMesas();
+  // Crear contenedor de detalle en la columna derecha si no existe
+  if (!document.getElementById("detalleCuenta")) {
+    const rightCol = document.querySelector(".card:last-child .cardBody");
+    const detalleDiv = document.createElement("div");
+    detalleDiv.id = "detalleCuenta";
+    detalleDiv.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
+    rightCol.appendChild(detalleDiv);
+  }
+})();
 </script>
 </body>
 </html>
