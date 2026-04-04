@@ -397,7 +397,7 @@ header {
   color: white;
 }
 
-/* Detalle productos (acordeón) */
+/* Detalle productos (acordeón dentro del modal) */
 .detailAccordion {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -560,6 +560,7 @@ header {
 
 <div class="wrap">
   <div class="grid">
+    <!-- Columna izquierda: configuración -->
     <section class="card">
       <div class="cardHead">
         <h2>Configuración</h2>
@@ -579,6 +580,7 @@ header {
       </div>
     </section>
 
+    <!-- Columna derecha: cuentas activas (sin detalles de productos) -->
     <section class="card">
       <div class="cardHead">
         <h2>Cuentas activas</h2>
@@ -591,6 +593,7 @@ header {
             <div class="emptyState">Cargando cuentas...</div>
           </div>
         </div>
+        <!-- Aquí ya no se muestran productos; solo el listado de cuentas -->
       </div>
     </section>
   </div>
@@ -599,7 +602,7 @@ header {
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
-<!-- Modal de acción (detalle + cobro) -->
+<!-- Modal de acción (detalle completo de productos + cobro) -->
 <div class="backdrop" id="mesaActionBackdrop">
   <div class="modal mesaActionModal">
     <div class="modalHead">
@@ -616,7 +619,7 @@ header {
           <div id="modalDetalleItems">Cargando...</div>
         </div>
       </div>
-      <label class="modalLabel">💰 Monto recibido</label>
+      <label class="modalLabel">💰 Monto recibido (solo para efectivo)</label>
       <input class="modalInput" id="mesaActionPago" type="number" step="0.01" placeholder="Ej: 500.00">
       <div id="mesaActionCambioBox" style="margin-top:16px; padding:12px; border-radius:32px; background:var(--bg-primary);">
         <b>💵 Cambio</b>
@@ -710,7 +713,7 @@ header {
     <div class="modalBody">
       <label class="modalLabel">Selecciona una fecha</label>
       <input class="modalInput" id="fechaResumenInput" type="date">
-      <p style="margin-top:12px; font-size:0.75rem; color:var(--text-muted);">Se generará un PDF con todas las ventas del día (solo cuentas con ventas > $0).</p>
+      <p style="margin-top:12px; font-size:0.75rem; color:var(--text-muted);">Se generará un PDF con todas las ventas del día, desglosado por método de pago.</p>
     </div>
     <div class="modalFoot">
       <button class="btnLight" id="btnFechaResumenCancelar">Cancelar</button>
@@ -817,10 +820,10 @@ function getTotalCuenta() {
   return itemsActuales.reduce((sum, item) => sum + (Number(item.qty || 0) * getPrecioUnitario(item)), 0);
 }
 
-// ==================== RENDER DE DETALLE (con botones admin) ====================
-function renderDetalleProductos(container, isModal = false) {
+// ==================== RENDER DE DETALLE DENTRO DEL MODAL (con botones admin) ====================
+function renderDetalleProductosModal() {
   if (!comandaActual || !itemsActuales.length) {
-    container.innerHTML = '<div style="padding:12px; text-align:center;">No hay productos en esta cuenta.</div>';
+    modalDetalleItems.innerHTML = '<div style="padding:12px; text-align:center;">No hay productos en esta cuenta.</div>';
     return;
   }
   let html = '';
@@ -843,65 +846,7 @@ function renderDetalleProductos(container, isModal = false) {
       </div>
     `;
   });
-  container.innerHTML = html;
-}
-
-// Función para actualizar el detalle en el modal y en la vista principal (si existe)
-function actualizarDetallesCompletos() {
-  if (comandaActual) {
-    renderDetalleProductos(modalDetalleItems, true);
-    // También actualizar la vista de la derecha si está visible (fuera del modal)
-    const detalleCuentaDiv = document.getElementById("detalleCuenta");
-    if (detalleCuentaDiv) renderVistaPrincipalCuenta(detalleCuentaDiv);
-  }
-}
-
-// Render de la cuenta en la columna derecha (para cuando se selecciona una cuenta)
-function renderVistaPrincipalCuenta(container) {
-  if (!comandaActual) {
-    container.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
-    return;
-  }
-  const total = getTotalCuenta();
-  let html = `
-    <div class="mainSummary" style="background:var(--primary-light); border-radius:var(--radius-lg); padding:16px; margin-bottom:16px;">
-      <div style="font-size:1.5rem; font-weight:800;">${escapeHtml(comandaActual.mesa)}</div>
-      <div style="font-size:0.85rem;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
-    </div>
-    <div class="detalle" style="display:grid; gap:12px;">
-  `;
-  itemsActuales.forEach(item => {
-    const precio = getPrecioUnitario(item);
-    const importe = Number(item.qty || 0) * precio;
-    html += `
-      <div style="background:white; border-radius:16px; border:1px solid var(--border-light); padding:12px;">
-        <div style="display:flex; justify-content:space-between;">
-          <span><strong>${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</strong></span>
-          <span>${money(importe)}</span>
-        </div>
-        ${item.nota ? `<div style="font-size:12px; color:#666;">• ${escapeHtml(item.nota)}</div>` : ''}
-        ${userRole === "admin" ? `
-          <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end;">
-            <button class="admin-btn admin-edit" onclick="editarPrecio('${item.id}')">✏️ Precio</button>
-            <button class="admin-btn admin-delete" onclick="eliminarProducto('${item.id}')">🗑️ Eliminar</button>
-          </div>
-        ` : ''}
-      </div>
-    `;
-  });
-  html += `
-      <div style="background:var(--warning-light); border-radius:20px; padding:16px; margin-top:8px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:1.2rem; font-weight:700;">Total</span>
-          <strong style="font-size:2rem;">${money(total)}</strong>
-        </div>
-        ${userRole === "admin" ? `
-          <button class="btnLight" style="margin-top:12px; width:100%;" onclick="mostrarAjusteTotal()">⚙️ Ajustar total</button>
-        ` : ''}
-      </div>
-    </div>
-  `;
-  container.innerHTML = html;
+  modalDetalleItems.innerHTML = html;
 }
 
 // ==================== ADMIN FUNCTIONS ====================
@@ -930,11 +875,9 @@ async function guardarPrecio() {
   } else {
     showToast("Precio actualizado", "success");
     await cargarCuenta(mesaActual);
-    actualizarDetallesCompletos();
-    if (mesaActionBackdrop.style.display === "flex") {
-      const total = getTotalCuenta();
-      mesaActionTotal.textContent = money(total);
-    }
+    renderDetalleProductosModal();
+    const total = getTotalCuenta();
+    mesaActionTotal.textContent = money(total);
   }
   editPriceBackdrop.style.display = "none";
   currentEditingItemId = null;
@@ -950,11 +893,9 @@ async function eliminarProducto(itemId) {
   } else {
     showToast("Producto eliminado", "success");
     await cargarCuenta(mesaActual);
-    actualizarDetallesCompletos();
-    if (mesaActionBackdrop.style.display === "flex") {
-      const total = getTotalCuenta();
-      mesaActionTotal.textContent = money(total);
-    }
+    renderDetalleProductosModal();
+    const total = getTotalCuenta();
+    mesaActionTotal.textContent = money(total);
   }
 }
 
@@ -996,11 +937,9 @@ async function aplicarAjusteTotal() {
   } else {
     showToast(`Ajuste aplicado: ${nombreAjuste}`, "success");
     await cargarCuenta(mesaActual);
-    actualizarDetallesCompletas();
-    if (mesaActionBackdrop.style.display === "flex") {
-      const total = getTotalCuenta();
-      mesaActionTotal.textContent = money(total);
-    }
+    renderDetalleProductosModal();
+    const total = getTotalCuenta();
+    mesaActionTotal.textContent = money(total);
   }
   adjustTotalBackdrop.style.display = "none";
 }
@@ -1096,13 +1035,10 @@ function renderMesas() {
         mesaActionPago.value = "";
         mesaActionCambio.textContent = money(0);
         document.getElementById("mesaActionCambioBox").style.background = "var(--bg-primary)";
-        renderDetalleProductos(modalDetalleItems, true);
+        renderDetalleProductosModal();
         accordionContent.classList.remove("open");
         accordionHeader.querySelector("span:last-child").textContent = "▼";
         mesaActionBackdrop.style.display = "flex";
-        // Actualizar la vista de la derecha
-        const detalleDiv = document.getElementById("detalleCuenta");
-        if (detalleDiv) renderVistaPrincipalCuenta(detalleDiv);
       } else {
         showToast(`No se pudo cargar la cuenta de ${mesa}`, "error");
       }
@@ -1159,7 +1095,7 @@ function imprimirTicket() {
   ventana.document.close();
 }
 
-// Cierre de cuenta con método de pago
+// Cierre de cuenta con método de pago (guarda el método en la BD)
 async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
@@ -1167,9 +1103,14 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (pago !== null && pago < total && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
   setSyncStatus(`Cerrando ${comandaActual.mesa}...`, "warn");
   try {
+    // Actualizar estado, fecha y método de pago
     const { error } = await supabase
       .from("comandas")
-      .update({ estado: "cerrada", updated_at: new Date().toISOString() })
+      .update({ 
+        estado: "cerrada", 
+        updated_at: new Date().toISOString(),
+        metodo_pago: paymentMethod  // Guardamos el método de pago
+      })
       .eq("id", comandaActual.id);
     if (error) throw error;
     const metodoTexto = { efectivo: "💵 Efectivo", tarjeta: "💳 Tarjeta", transferencia: "🏦 Transferencia" }[paymentMethod];
@@ -1180,8 +1121,6 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
     mesaActual = "";
     await cargarEstadoMesas();
     setSyncStatus("Cuenta cerrada", "ok");
-    const detalleDiv = document.getElementById("detalleCuenta");
-    if (detalleDiv) detalleDiv.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
   } catch (error) { console.error(error); showToast("Error al cerrar la cuenta", "error"); }
 }
 
@@ -1221,7 +1160,7 @@ mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPago.addEventListener("input", calcularCambioModal);
 mesaActionPrintBtn.onclick = imprimirTicket;
 
-// Resumen PDF
+// ==================== RESUMEN PDF CON DESGLOSE POR MÉTODO DE PAGO ====================
 function getRangoLocalDia(fechaStr) {
   const [y,m,d] = fechaStr.split("-").map(Number);
   const inicio = new Date(y,m-1,d,0,0,0,0);
@@ -1232,8 +1171,14 @@ function getRangoLocalDia(fechaStr) {
 async function obtenerDatosResumenDia(fechaStr) {
   if (!supabaseReady) return null;
   const { inicioISO, finISO, fechaBonita } = getRangoLocalDia(fechaStr);
-  const { data: comandas } = await supabase.from("comandas").select("id,mesa,mesero,estado,updated_at").eq("estado","cerrada").gte("updated_at",inicioISO).lte("updated_at",finISO);
-  if (!comandas?.length) return { fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[] };
+  // Incluir metodo_pago en la selección
+  const { data: comandas } = await supabase
+    .from("comandas")
+    .select("id, mesa, mesero, estado, updated_at, metodo_pago")
+    .eq("estado","cerrada")
+    .gte("updated_at",inicioISO)
+    .lte("updated_at",finISO);
+  if (!comandas?.length) return { fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[], porMetodoPago:{efectivo:{total:0,comandas:0},tarjeta:{total:0,comandas:0},transferencia:{total:0,comandas:0}} };
   const ids = comandas.map(c=>c.id);
   let items = [];
   if (ids.length) {
@@ -1247,12 +1192,13 @@ async function obtenerDatosResumenDia(fechaStr) {
     const total = arr.reduce((acc,it)=> acc + (it.qty * (it.precio_unitario ?? PRECIOS[it.producto_id] ?? 0)), 0);
     return {...com, total};
   }).filter(c=>c.total>0);
-  if (!comandasConTotal.length) return { fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[] };
+  if (!comandasConTotal.length) return { fechaBonita, totalGeneral:0, totalComandas:0, porTipoCuenta:{mesas:{total:0,comandas:0},llevar:{total:0,comandas:0},carrito:{total:0,comandas:0}}, rankingMeseros:[], todosProductos:[], detalleComandas:[], porMetodoPago:{efectivo:{total:0,comandas:0},tarjeta:{total:0,comandas:0},transferencia:{total:0,comandas:0}} };
   let totalGeneral=0;
   const porTipoCuenta = { mesas:{total:0,comandas:0}, llevar:{total:0,comandas:0}, carrito:{total:0,comandas:0} };
   const porMesero = {};
   const productos = {};
   const detalleComandas = [];
+  const porMetodoPago = { efectivo:{total:0,comandas:0}, tarjeta:{total:0,comandas:0}, transferencia:{total:0,comandas:0} };
   comandasConTotal.forEach(com => {
     const arr = itemsPorComanda[com.id]||[];
     const total = com.total;
@@ -1264,18 +1210,26 @@ async function obtenerDatosResumenDia(fechaStr) {
     if (mesaNombre.includes("para llevar")) porTipoCuenta.llevar.total += total, porTipoCuenta.llevar.comandas++;
     else if (mesaNombre.includes("carrito")) porTipoCuenta.carrito.total += total, porTipoCuenta.carrito.comandas++;
     else porTipoCuenta.mesas.total += total, porTipoCuenta.mesas.comandas++;
+    // Agrupar por método de pago
+    const metodo = com.metodo_pago || "no_definido";
+    if (porMetodoPago[metodo]) {
+      porMetodoPago[metodo].total += total;
+      porMetodoPago[metodo].comandas++;
+    } else if (metodo !== "no_definido") {
+      porMetodoPago[metodo] = { total, comandas:1 };
+    }
     arr.forEach(it => {
       const nombre = it.producto_nombre||"Producto";
       if (!productos[nombre]) productos[nombre] = { qty:0, total:0 };
       productos[nombre].qty += it.qty;
       productos[nombre].total += it.qty * (it.precio_unitario ?? PRECIOS[it.producto_id] ?? 0);
     });
-    detalleComandas.push({ mesa:com.mesa, mesero, total, updated_at:com.updated_at });
+    detalleComandas.push({ mesa:com.mesa, mesero, total, updated_at:com.updated_at, metodo_pago:com.metodo_pago || "No especificado" });
   });
   detalleComandas.sort((a,b)=>b.total-a.total);
   const rankingMeseros = Object.entries(porMesero).sort((a,b)=>b[1].total-a[1].total);
   const todosProductos = Object.entries(productos).sort((a,b)=>b[1].total-a[1].total);
-  return { fechaBonita, totalGeneral, totalComandas:comandasConTotal.length, porTipoCuenta, rankingMeseros, todosProductos, detalleComandas };
+  return { fechaBonita, totalGeneral, totalComandas:comandasConTotal.length, porTipoCuenta, rankingMeseros, todosProductos, detalleComandas, porMetodoPago };
 }
 
 async function descargarResumenPDF(fechaStr) {
@@ -1327,21 +1281,40 @@ async function descargarResumenPDF(fechaStr) {
     doc.save(`resumen_${data.fechaStr}_sin_ventas.pdf`);
     return;
   }
+  // Tabla por método de pago
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Ventas por método de pago",marginX,y);
+  y+=10;
+  const metodosBody = [];
+  if (data.porMetodoPago.efectivo) metodosBody.push(["Efectivo", String(data.porMetodoPago.efectivo.comandas), formatMoney(data.porMetodoPago.efectivo.total)]);
+  if (data.porMetodoPago.tarjeta) metodosBody.push(["Tarjeta", String(data.porMetodoPago.tarjeta.comandas), formatMoney(data.porMetodoPago.tarjeta.total)]);
+  if (data.porMetodoPago.transferencia) metodosBody.push(["Transferencia", String(data.porMetodoPago.transferencia.comandas), formatMoney(data.porMetodoPago.transferencia.total)]);
+  if (metodosBody.length === 0) metodosBody.push(["Sin datos", "0", formatMoney(0)]);
+  doc.autoTable({...buildTableTheme(10), startY:y, head:[["Método","Cuentas","Total"]], body:metodosBody, columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
+  y = doc.lastAutoTable.finalY+22;
+  
+  // Por tipo de cuenta
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Por tipo de cuenta",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(10), startY:y, head:[["Tipo","Cuentas","Total"]], body:[["Mesas",String(data.porTipoCuenta.mesas.comandas),formatMoney(data.porTipoCuenta.mesas.total)],["Para llevar",String(data.porTipoCuenta.llevar.comandas),formatMoney(data.porTipoCuenta.llevar.total)],["Carrito afuera",String(data.porTipoCuenta.carrito.comandas),formatMoney(data.porTipoCuenta.carrito.total)]], columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
   y = doc.lastAutoTable.finalY+22;
+  
+  // Ventas por mesero
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Ventas por mesero",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(10), startY:y, head:[["Mesero","Cuentas","Total"]], body:data.rankingMeseros.length?data.rankingMeseros.map(([m,i])=>[m,String(i.comandas),formatMoney(i.total)]):[["Sin registros","0",formatMoney(0)]], columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
   y = doc.lastAutoTable.finalY+22;
-  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Todas las comandas cerradas del día (con ventas > $0)",marginX,y);
+  
+  // Lista detallada de comandas con método de pago
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Comandas cerradas (con método de pago)",marginX,y);
   y+=10;
-  doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Cuenta","Mesero","Hora cierre","Total"]], body:data.detalleComandas.map(c=>[c.mesa,c.mesero,new Date(c.updated_at).toLocaleTimeString(),formatMoney(c.total)]), columnStyles:{2:{halign:"center",cellWidth:90},3:{halign:"right",cellWidth:90}} });
+  doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Cuenta","Mesero","Hora","Método","Total"]], body:data.detalleComandas.map(c=>[c.mesa,c.mesero,new Date(c.updated_at).toLocaleTimeString(),c.metodo_pago,formatMoney(c.total)]), columnStyles:{2:{halign:"center",cellWidth:80},3:{halign:"center",cellWidth:80},4:{halign:"right",cellWidth:90}} });
   y = doc.lastAutoTable.finalY+22;
-  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Todos los productos vendidos del día",marginX,y);
+  
+  // Todos los productos
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Todos los productos vendidos",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Producto","Cantidad","Total"]], body:data.todosProductos.map(([n,i])=>[n,String(i.qty),formatMoney(i.total)]), columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
+  
   const totalPages = doc.internal.getNumberOfPages();
   for(let i=1;i<=totalPages;i++){ doc.setPage(i); doc.setFontSize(9); doc.setTextColor(...colors.muted); doc.text(`Página ${i} de ${totalPages}`,pageWidth-marginX,pageHeight-16,{align:"right"}); }
   doc.save(`resumen_ventas_${data.fechaStr}.pdf`);
@@ -1365,8 +1338,6 @@ async function cambiarTipoVista(nuevoTipo) {
   btnTipoLlevar.classList.toggle("active", tipoVista==="llevar");
   btnTipoCarrito.classList.toggle("active", tipoVista==="carrito");
   await cargarEstadoMesas();
-  const detalleDiv = document.getElementById("detalleCuenta");
-  if (detalleDiv) detalleDiv.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
 }
 
 // Event listeners
@@ -1384,12 +1355,9 @@ document.getElementById("btnEntrarLogin").onclick = () => {
   roleInfo.textContent = `👤 Modo: ${userRole==="admin"?"Administrador 👑":"Operador"}`;
   loginBackdrop.style.display = "none";
   showToast(`Modo ${userRole==="admin"?"Administrador":"Operador"} activado`, "success");
-  if (comandaActual) {
-    actualizarDetallesCompletos();
-    if (mesaActionBackdrop.style.display === "flex") renderDetalleProductos(modalDetalleItems, true);
-  }
+  if (comandaActual && mesaActionBackdrop.style.display === "flex") renderDetalleProductosModal();
 };
-document.getElementById("btnActualizarMesas").onclick = async () => { await cargarEstadoMesas(); if (mesaActual) await cargarCuenta(mesaActual); };
+document.getElementById("btnActualizarMesas").onclick = async () => { await cargarEstadoMesas(); };
 document.getElementById("btnResumen").onclick = openFechaResumenModal;
 document.getElementById("btnFechaResumenCancelar").onclick = closeFechaResumenModal;
 document.getElementById("btnFechaResumenEnviar").onclick = async () => {
@@ -1429,14 +1397,6 @@ if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
 roleInfo.textContent = "👤 Modo: Operador";
 (async function init() {
   await cargarEstadoMesas();
-  // Crear contenedor de detalle en la columna derecha si no existe
-  if (!document.getElementById("detalleCuenta")) {
-    const rightCol = document.querySelector(".card:last-child .cardBody");
-    const detalleDiv = document.createElement("div");
-    detalleDiv.id = "detalleCuenta";
-    detalleDiv.innerHTML = `<div class="emptyState">Selecciona una cuenta.</div>`;
-    rightCol.appendChild(detalleDiv);
-  }
 })();
 </script>
 </body>
