@@ -374,7 +374,7 @@ header {
   display: block;
 }
 
-/* Método de pago (ahora sin botón continuar) */
+/* Método de pago */
 .paymentMethodGrid {
   display: flex;
   gap: 12px;
@@ -579,7 +579,7 @@ header {
       </div>
     </section>
 
-    <!-- Columna derecha: cuentas activas (sin detalles de productos) -->
+    <!-- Columna derecha: cuentas activas -->
     <section class="card">
       <div class="cardHead">
         <h2>Cuentas activas</h2>
@@ -617,6 +617,12 @@ header {
           <div id="modalDetalleItems">Cargando...</div>
         </div>
       </div>
+      <label class="modalLabel">💰 Monto recibido (solo para efectivo)</label>
+      <input class="modalInput" id="mesaActionPago" type="number" step="0.01" placeholder="Ej: 500.00">
+      <div id="mesaActionCambioBox" style="margin-top:16px; padding:12px; border-radius:32px; background:var(--bg-primary);">
+        <b>💵 Cambio</b>
+        <span id="mesaActionCambio" style="font-size:1.8rem; font-weight:800; display:block;">$0.00</span>
+      </div>
       <div class="actionButtons">
         <button class="actionBtn actionPrint" id="mesaActionPrintBtn">🖨️ Imprimir</button>
         <button class="actionBtn actionPay" id="mesaActionPayBtn">💵 Cobrar</button>
@@ -626,7 +632,7 @@ header {
   </div>
 </div>
 
-<!-- Modal método de pago (sin botón continuar) -->
+<!-- Modal método de pago -->
 <div class="backdrop" id="paymentMethodBackdrop">
   <div class="modal">
     <div class="modalHead"><h3>Método de pago</h3></div>
@@ -658,7 +664,7 @@ header {
   </div>
 </div>
 
-<!-- Modal ajuste total (descuento/recargo) -->
+<!-- Modal ajuste total -->
 <div class="backdrop" id="adjustTotalBackdrop">
   <div class="modal">
     <div class="modalHead"><h3>Ajustar total de la cuenta</h3></div>
@@ -758,6 +764,8 @@ const toastEl = document.getElementById("toast");
 const mesaActionBackdrop = document.getElementById("mesaActionBackdrop");
 const mesaActionTitle = document.getElementById("mesaActionTitle");
 const mesaActionTotal = document.getElementById("mesaActionTotal");
+const mesaActionPago = document.getElementById("mesaActionPago");
+const mesaActionCambio = document.getElementById("mesaActionCambio");
 const mesaActionPrintBtn = document.getElementById("mesaActionPrintBtn");
 const mesaActionPayBtn = document.getElementById("mesaActionPayBtn");
 const mesaActionCancelBtn = document.getElementById("mesaActionCancelBtn");
@@ -807,7 +815,18 @@ function getTotalCuenta() {
   return itemsActuales.reduce((sum, item) => sum + (Number(item.qty || 0) * getPrecioUnitario(item)), 0);
 }
 
-// ==================== RENDER DE DETALLE DENTRO DEL MODAL (con botones admin) ====================
+function calcularCambioModal() {
+  const total = getTotalCuenta();
+  const pago = parseFloat(mesaActionPago.value) || 0;
+  const cambio = pago - total;
+  mesaActionCambio.textContent = money(cambio);
+  const cambioBox = document.getElementById("mesaActionCambioBox");
+  if (cambio >= 0 && pago > 0) cambioBox.style.background = "#e8f5e9";
+  else if (pago > 0 && cambio < 0) cambioBox.style.background = "#ffebee";
+  else cambioBox.style.background = "var(--bg-primary)";
+}
+
+// ==================== RENDER DE DETALLE DENTRO DEL MODAL ====================
 function renderDetalleProductosModal() {
   if (!comandaActual || !itemsActuales.length) {
     modalDetalleItems.innerHTML = '<div style="padding:12px; text-align:center;">No hay productos en esta cuenta.</div>';
@@ -865,6 +884,7 @@ async function guardarPrecio() {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
+    calcularCambioModal();
   }
   editPriceBackdrop.style.display = "none";
   currentEditingItemId = null;
@@ -883,6 +903,7 @@ async function eliminarProducto(itemId) {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
+    calcularCambioModal();
   }
 }
 
@@ -927,6 +948,7 @@ async function aplicarAjusteTotal() {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
+    calcularCambioModal();
   }
   adjustTotalBackdrop.style.display = "none";
 }
@@ -1019,6 +1041,9 @@ function renderMesas() {
         const total = getTotalCuenta();
         mesaActionTitle.textContent = `Cuenta - ${mesa}`;
         mesaActionTotal.textContent = money(total);
+        mesaActionPago.value = "";
+        mesaActionCambio.textContent = money(0);
+        document.getElementById("mesaActionCambioBox").style.background = "var(--bg-primary)";
         renderDetalleProductosModal();
         accordionContent.classList.remove("open");
         accordionHeader.querySelector("span:last-child").textContent = "▼";
@@ -1031,7 +1056,7 @@ function renderMesas() {
   });
 }
 
-// ==================== IMPRESIÓN CON TAMAÑO MÁXIMO ====================
+// ==================== IMPRESIÓN TAMAÑO GRANDE ====================
 function buildCuentaPrint() {
   if (!comandaActual) return "";
   const total = getTotalCuenta();
@@ -1066,25 +1091,19 @@ function imprimirTicket() {
   if (!ventana) { showToast("Permite ventanas emergentes para imprimir", "error"); return; }
   ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket - ${comandaActual.mesa}</title><style>
     @page { size: 120mm auto; margin: 5mm; }
-    body { 
-      font-family: 'Segoe UI', system-ui, sans-serif; 
-      padding: 0; 
-      width: 100%; 
-      margin: 0 auto; 
-      background: white;
-    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; width: 100%; margin: 0 auto; background: white; }
     </style></head><body>${contenido}<script>
     window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 1500); }, 400); };
     <\/script></body></html>`);
   ventana.document.close();
 }
 
-// ==================== CIERRE DE CUENTA AUTOMÁTICO ====================
-async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
+// ==================== CIERRE DE CUENTA USANDO EL MONTO INGRESADO ====================
+async function cerrarCuentaConMetodo(paymentMethod) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
-  let pago = paymentMethod !== "efectivo" ? total : montoRecibido;
-  if (pago !== null && pago < total && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
+  let pago = (paymentMethod === "efectivo") ? parseFloat(mesaActionPago.value) || 0 : total;
+  if (pago < total && paymentMethod === "efectivo" && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
   setSyncStatus(`Cerrando ${comandaActual.mesa}...`, "warn");
   try {
     const { error } = await supabase
@@ -1112,20 +1131,13 @@ function mostrarSeleccionMetodo() {
   paymentMethodBackdrop.style.display = "flex";
 }
 
+// Manejo de clic en método de pago
 paymentMethodGrid.addEventListener("click", async (e) => {
   const btn = e.target.closest(".paymentMethodBtn");
   if (!btn) return;
   const method = btn.getAttribute("data-method");
   paymentMethodBackdrop.style.display = "none";
-  
-  if (method === "efectivo") {
-    let monto = prompt("Ingresa el monto recibido en efectivo:", "0");
-    if (monto === null) return;
-    monto = parseFloat(monto) || 0;
-    await cerrarCuentaConMetodo("efectivo", monto);
-  } else {
-    await cerrarCuentaConMetodo(method);
-  }
+  await cerrarCuentaConMetodo(method);
 });
 
 btnCancelPaymentMethod.onclick = () => {
@@ -1135,8 +1147,9 @@ btnCancelPaymentMethod.onclick = () => {
 mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPrintBtn.onclick = imprimirTicket;
+mesaActionPago.addEventListener("input", calcularCambioModal);
 
-// ==================== RESUMEN PDF (sin cambios relevantes) ====================
+// ==================== RESUMEN PDF (sin cambios) ====================
 function getRangoLocalDia(fechaStr) {
   const [y,m,d] = fechaStr.split("-").map(Number);
   const inicio = new Date(y,m-1,d,0,0,0,0);
