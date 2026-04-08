@@ -1148,6 +1148,13 @@ mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPrintBtn.onclick = imprimirTicket;
 mesaActionPago.addEventListener("input", calcularCambioModal);
+// NUEVO: ocultar teclado al presionar Enter en el campo de monto
+mesaActionPago.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    mesaActionPago.blur();  // oculta el teclado
+  }
+});
 
 // ==================== RESUMEN PDF (sin cambios) ====================
 function getRangoLocalDia(fechaStr) {
