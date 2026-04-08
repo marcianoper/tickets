@@ -1031,49 +1031,55 @@ function renderMesas() {
   });
 }
 
-// Impresión con tamaño más grande
+// ==================== IMPRESIÓN CON TAMAÑO MÁXIMO ====================
 function buildCuentaPrint() {
   if (!comandaActual) return "";
   const total = getTotalCuenta();
-  let html = `<div style="text-align:center; font-weight:900; font-size:26px; margin-bottom:12px;">GUADALUPE VICTORIA</div>
-    <div style="text-align:center; font-weight:900; font-size:22px;">${escapeHtml(comandaActual.mesa)}</div>
-    <div style="text-align:center; font-size:16px;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
-    <div style="text-align:center; font-size:14px;">${new Date().toLocaleString()}</div>
-    <div style="border-top:2px dashed #000; margin:12px 0;"></div>`;
+  let html = `<div style="text-align:center; font-weight:900; font-size:36px; margin-bottom:16px;">GUADALUPE VICTORIA</div>
+    <div style="text-align:center; font-weight:900; font-size:30px; margin-bottom:8px;">${escapeHtml(comandaActual.mesa)}</div>
+    <div style="text-align:center; font-size:18px; margin-bottom:4px;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
+    <div style="text-align:center; font-size:16px; margin-bottom:12px;">${new Date().toLocaleString()}</div>
+    <div style="border-top:3px dashed #000; margin:12px 0;"></div>`;
   itemsActuales.forEach(item => {
     const precio = getPrecioUnitario(item);
     const importe = Number(item.qty || 0) * precio;
-    html += `<div style="margin:8px 0;">
-        <div style="font-weight:900; font-size:20px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-        <div style="display:flex; justify-content:space-between; font-size:18px;">
+    html += `<div style="margin:12px 0;">
+        <div style="font-weight:900; font-size:24px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+        <div style="display:flex; justify-content:space-between; font-size:22px; margin-top:4px;">
           <span>${money(precio)} c/u</span>
-          <span>${money(importe)}</span>
+          <span style="font-weight:700;">${money(importe)}</span>
         </div>
       </div>`;
   });
-  html += `<div style="border-top:2px dashed #000; margin:12px 0;"></div>
-    <div style="display:flex; justify-content:space-between; font-size:32px; font-weight:900; margin-top:8px;">
+  html += `<div style="border-top:3px dashed #000; margin:16px 0;"></div>
+    <div style="display:flex; justify-content:space-between; font-size:44px; font-weight:900; margin-top:8px;">
       <span>TOTAL</span><span>${money(total)}</span>
     </div>
-    <div style="text-align:center; margin-top:16px; font-size:16px;">¡Gracias por su visita!</div>`;
+    <div style="text-align:center; margin-top:24px; font-size:20px;">¡Gracias por su visita!</div>`;
   return html;
 }
 
 function imprimirTicket() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const contenido = buildCuentaPrint();
-  const ventana = window.open('', '_blank', 'width=500,height=700');
+  const ventana = window.open('', '_blank', 'width=600,height=800');
   if (!ventana) { showToast("Permite ventanas emergentes para imprimir", "error"); return; }
-  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket</title><style>
-    @page { size: 104mm auto; margin: 0; }
-    body { font-family: monospace; padding: 8px; width: 104mm; margin: 0 auto; font-size: 16px; }
+  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket - ${comandaActual.mesa}</title><style>
+    @page { size: 120mm auto; margin: 5mm; }
+    body { 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      padding: 0; 
+      width: 100%; 
+      margin: 0 auto; 
+      background: white;
+    }
     </style></head><body>${contenido}<script>
-    window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 1000); }, 300); };
+    window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 1500); }, 400); };
     <\/script></body></html>`);
   ventana.document.close();
 }
 
-// Cierre de cuenta con método de pago (automático)
+// ==================== CIERRE DE CUENTA AUTOMÁTICO ====================
 async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
@@ -1101,13 +1107,11 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   } catch (error) { console.error(error); showToast("Error al cerrar la cuenta", "error"); }
 }
 
-// Flujo de cobro: muestra métodos y al elegir uno, cierra automáticamente
 function mostrarSeleccionMetodo() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   paymentMethodBackdrop.style.display = "flex";
 }
 
-// Manejo de clic en método de pago
 paymentMethodGrid.addEventListener("click", async (e) => {
   const btn = e.target.closest(".paymentMethodBtn");
   if (!btn) return;
@@ -1116,7 +1120,7 @@ paymentMethodGrid.addEventListener("click", async (e) => {
   
   if (method === "efectivo") {
     let monto = prompt("Ingresa el monto recibido en efectivo:", "0");
-    if (monto === null) return; // canceló
+    if (monto === null) return;
     monto = parseFloat(monto) || 0;
     await cerrarCuentaConMetodo("efectivo", monto);
   } else {
