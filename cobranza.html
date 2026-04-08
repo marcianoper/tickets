@@ -1064,7 +1064,7 @@ function buildCuentaPrint() {
   const total = getTotalCuenta();
   const pago = parseFloat(mesaActionPago.value) || 0;
   const cambio = pago - total;
-  let html = `<div style="text-align:center; font-weight:900; font-size:18px;">GUADALUPE VICTORIA</div>
+  let html = `<div style="text-align:center; font-weight:900; font-size:22px;">GUADALUPE VICTORIA</div>
     <div style="text-align:center; font-weight:900;">${escapeHtml(comandaActual.mesa)}</div>
     <div style="text-align:center;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
     <div style="text-align:center;">${new Date().toLocaleString()}</div>
