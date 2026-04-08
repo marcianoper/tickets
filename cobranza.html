@@ -374,12 +374,11 @@ header {
   display: block;
 }
 
-/* Método de pago */
+/* Método de pago (ahora sin botón continuar) */
 .paymentMethodGrid {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
 }
 .paymentMethodBtn {
   flex: 1;
@@ -390,11 +389,11 @@ header {
   font-weight: 600;
   cursor: pointer;
   text-align: center;
+  transition: all 0.2s;
 }
-.paymentMethodBtn.selected {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
+.paymentMethodBtn:hover {
+  background: var(--primary-light);
+  transform: scale(0.98);
 }
 
 /* Detalle productos (acordeón dentro del modal) */
@@ -593,7 +592,6 @@ header {
             <div class="emptyState">Cargando cuentas...</div>
           </div>
         </div>
-        <!-- Aquí ya no se muestran productos; solo el listado de cuentas -->
       </div>
     </section>
   </div>
@@ -619,12 +617,6 @@ header {
           <div id="modalDetalleItems">Cargando...</div>
         </div>
       </div>
-      <label class="modalLabel">💰 Monto recibido (solo para efectivo)</label>
-      <input class="modalInput" id="mesaActionPago" type="number" step="0.01" placeholder="Ej: 500.00">
-      <div id="mesaActionCambioBox" style="margin-top:16px; padding:12px; border-radius:32px; background:var(--bg-primary);">
-        <b>💵 Cambio</b>
-        <span id="mesaActionCambio" style="font-size:1.8rem; font-weight:800; display:block;">$0.00</span>
-      </div>
       <div class="actionButtons">
         <button class="actionBtn actionPrint" id="mesaActionPrintBtn">🖨️ Imprimir</button>
         <button class="actionBtn actionPay" id="mesaActionPayBtn">💵 Cobrar</button>
@@ -634,7 +626,7 @@ header {
   </div>
 </div>
 
-<!-- Modal método de pago -->
+<!-- Modal método de pago (sin botón continuar) -->
 <div class="backdrop" id="paymentMethodBackdrop">
   <div class="modal">
     <div class="modalHead"><h3>Método de pago</h3></div>
@@ -647,7 +639,6 @@ header {
     </div>
     <div class="modalFoot">
       <button class="btnLight" id="btnCancelPaymentMethod">Cancelar</button>
-      <button class="btnBlue" id="btnConfirmPaymentMethod">Continuar</button>
     </div>
   </div>
 </div>
@@ -736,7 +727,6 @@ let mesasConCuenta = new Set();
 let resumenMesas = {};
 let userRole = "operador";
 let tipoVista = "mesas";
-let selectedPaymentMethod = null;
 let currentEditingItemId = null;
 
 // Precios predefinidos
@@ -768,8 +758,6 @@ const toastEl = document.getElementById("toast");
 const mesaActionBackdrop = document.getElementById("mesaActionBackdrop");
 const mesaActionTitle = document.getElementById("mesaActionTitle");
 const mesaActionTotal = document.getElementById("mesaActionTotal");
-const mesaActionPago = document.getElementById("mesaActionPago");
-const mesaActionCambio = document.getElementById("mesaActionCambio");
 const mesaActionPrintBtn = document.getElementById("mesaActionPrintBtn");
 const mesaActionPayBtn = document.getElementById("mesaActionPayBtn");
 const mesaActionCancelBtn = document.getElementById("mesaActionCancelBtn");
@@ -780,7 +768,6 @@ const modalDetalleItems = document.getElementById("modalDetalleItems");
 const paymentMethodBackdrop = document.getElementById("paymentMethodBackdrop");
 const paymentMethodGrid = document.getElementById("paymentMethodGrid");
 const btnCancelPaymentMethod = document.getElementById("btnCancelPaymentMethod");
-const btnConfirmPaymentMethod = document.getElementById("btnConfirmPaymentMethod");
 
 const editPriceBackdrop = document.getElementById("editPriceBackdrop");
 const editPriceInput = document.getElementById("editPriceInput");
@@ -1032,9 +1019,6 @@ function renderMesas() {
         const total = getTotalCuenta();
         mesaActionTitle.textContent = `Cuenta - ${mesa}`;
         mesaActionTotal.textContent = money(total);
-        mesaActionPago.value = "";
-        mesaActionCambio.textContent = money(0);
-        document.getElementById("mesaActionCambioBox").style.background = "var(--bg-primary)";
         renderDetalleProductosModal();
         accordionContent.classList.remove("open");
         accordionHeader.querySelector("span:last-child").textContent = "▼";
@@ -1047,55 +1031,49 @@ function renderMesas() {
   });
 }
 
-function calcularCambioModal() {
-  const total = getTotalCuenta();
-  const pago = parseFloat(mesaActionPago.value) || 0;
-  const cambio = pago - total;
-  mesaActionCambio.textContent = money(cambio);
-  const cambioBox = document.getElementById("mesaActionCambioBox");
-  if (cambio >= 0 && pago > 0) cambioBox.style.background = "#e8f5e9";
-  else if (pago > 0 && cambio < 0) cambioBox.style.background = "#ffebee";
-  else cambioBox.style.background = "var(--bg-primary)";
-}
-
-// Impresión
+// Impresión con tamaño más grande
 function buildCuentaPrint() {
   if (!comandaActual) return "";
   const total = getTotalCuenta();
-  const pago = parseFloat(mesaActionPago.value) || 0;
-  const cambio = pago - total;
-  let html = `<div style="text-align:center; font-weight:900; font-size:22px;">GUADALUPE VICTORIA</div>
-    <div style="text-align:center; font-weight:900;">${escapeHtml(comandaActual.mesa)}</div>
-    <div style="text-align:center;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
-    <div style="text-align:center;">${new Date().toLocaleString()}</div>
-    <div style="border-top:1px dashed #000; margin:8px 0;"></div>`;
+  let html = `<div style="text-align:center; font-weight:900; font-size:26px; margin-bottom:12px;">GUADALUPE VICTORIA</div>
+    <div style="text-align:center; font-weight:900; font-size:22px;">${escapeHtml(comandaActual.mesa)}</div>
+    <div style="text-align:center; font-size:16px;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
+    <div style="text-align:center; font-size:14px;">${new Date().toLocaleString()}</div>
+    <div style="border-top:2px dashed #000; margin:12px 0;"></div>`;
   itemsActuales.forEach(item => {
     const precio = getPrecioUnitario(item);
     const importe = Number(item.qty || 0) * precio;
-    html += `<div style="margin:6px 0;"><div style="font-weight:900;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-      <div style="display:flex; justify-content:space-between;"><span>${money(precio)} c/u</span><span>${money(importe)}</span></div></div>`;
+    html += `<div style="margin:8px 0;">
+        <div style="font-weight:900; font-size:20px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+        <div style="display:flex; justify-content:space-between; font-size:18px;">
+          <span>${money(precio)} c/u</span>
+          <span>${money(importe)}</span>
+        </div>
+      </div>`;
   });
-  if (pago > 0) {
-    html += `<div style="border-top:1px dashed #000; margin:8px 0;"></div>
-      <div style="display:flex; justify-content:space-between;"><span>Pago:</span><span>${money(pago)}</span></div>
-      <div style="display:flex; justify-content:space-between;"><span>Cambio:</span><span>${money(cambio)}</span></div>`;
-  }
-  html += `<div style="border-top:1px dashed #000; margin:8px 0;"></div>
-    <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:900;"><span>TOTAL</span><span>${money(total)}</span></div>
-    <div style="text-align:center; margin-top:12px;">¡Gracias por su visita!</div>`;
+  html += `<div style="border-top:2px dashed #000; margin:12px 0;"></div>
+    <div style="display:flex; justify-content:space-between; font-size:32px; font-weight:900; margin-top:8px;">
+      <span>TOTAL</span><span>${money(total)}</span>
+    </div>
+    <div style="text-align:center; margin-top:16px; font-size:16px;">¡Gracias por su visita!</div>`;
   return html;
 }
 
 function imprimirTicket() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const contenido = buildCuentaPrint();
-  const ventana = window.open('', '_blank', 'width=400,height=600');
+  const ventana = window.open('', '_blank', 'width=500,height=700');
   if (!ventana) { showToast("Permite ventanas emergentes para imprimir", "error"); return; }
-  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket</title><style>@page{size:80mm auto;margin:0;}body{font-family:monospace;padding:5px;width:80mm;margin:0 auto;}</style></head><body>${contenido}<script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close();},1000);},300);};<\/script></body></html>`);
+  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket</title><style>
+    @page { size: 104mm auto; margin: 0; }
+    body { font-family: monospace; padding: 8px; width: 104mm; margin: 0 auto; font-size: 16px; }
+    </style></head><body>${contenido}<script>
+    window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 1000); }, 300); };
+    <\/script></body></html>`);
   ventana.document.close();
 }
 
-// Cierre de cuenta con método de pago (guarda el método en la BD)
+// Cierre de cuenta con método de pago (automático)
 async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
@@ -1103,13 +1081,12 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (pago !== null && pago < total && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
   setSyncStatus(`Cerrando ${comandaActual.mesa}...`, "warn");
   try {
-    // Actualizar estado, fecha y método de pago
     const { error } = await supabase
       .from("comandas")
       .update({ 
         estado: "cerrada", 
         updated_at: new Date().toISOString(),
-        metodo_pago: paymentMethod  // Guardamos el método de pago
+        metodo_pago: paymentMethod
       })
       .eq("id", comandaActual.id);
     if (error) throw error;
@@ -1124,43 +1101,38 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   } catch (error) { console.error(error); showToast("Error al cerrar la cuenta", "error"); }
 }
 
-// Flujo de cobro
+// Flujo de cobro: muestra métodos y al elegir uno, cierra automáticamente
 function mostrarSeleccionMetodo() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
-  selectedPaymentMethod = null;
-  document.querySelectorAll('.paymentMethodBtn').forEach(btn => btn.classList.remove('selected'));
   paymentMethodBackdrop.style.display = "flex";
 }
-paymentMethodGrid.addEventListener("click", (e) => {
+
+// Manejo de clic en método de pago
+paymentMethodGrid.addEventListener("click", async (e) => {
   const btn = e.target.closest(".paymentMethodBtn");
   if (!btn) return;
-  document.querySelectorAll('.paymentMethodBtn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedPaymentMethod = btn.getAttribute("data-method");
-});
-btnConfirmPaymentMethod.onclick = () => {
-  if (!selectedPaymentMethod) { showToast("Selecciona un método de pago", "error"); return; }
+  const method = btn.getAttribute("data-method");
   paymentMethodBackdrop.style.display = "none";
-  if (selectedPaymentMethod === "efectivo") {
-    mesaActionBackdrop.style.display = "flex";
-    const originalHandler = mesaActionPayBtn.onclick;
-    mesaActionPayBtn.onclick = async () => {
-      const pago = parseFloat(mesaActionPago.value) || 0;
-      await cerrarCuentaConMetodo("efectivo", pago);
-      mesaActionPayBtn.onclick = originalHandler;
-    };
+  
+  if (method === "efectivo") {
+    let monto = prompt("Ingresa el monto recibido en efectivo:", "0");
+    if (monto === null) return; // canceló
+    monto = parseFloat(monto) || 0;
+    await cerrarCuentaConMetodo("efectivo", monto);
   } else {
-    cerrarCuentaConMetodo(selectedPaymentMethod, getTotalCuenta());
-    mesaActionBackdrop.style.display = "none";
+    await cerrarCuentaConMetodo(method);
   }
+});
+
+btnCancelPaymentMethod.onclick = () => {
+  paymentMethodBackdrop.style.display = "none";
 };
-btnCancelPaymentMethod.onclick = () => paymentMethodBackdrop.style.display = "none";
+
 mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
-mesaActionPago.addEventListener("input", calcularCambioModal);
 mesaActionPrintBtn.onclick = imprimirTicket;
 
-// ==================== RESUMEN PDF CON DESGLOSE POR MÉTODO DE PAGO ====================
+// ==================== RESUMEN PDF (sin cambios relevantes) ====================
 function getRangoLocalDia(fechaStr) {
   const [y,m,d] = fechaStr.split("-").map(Number);
   const inicio = new Date(y,m-1,d,0,0,0,0);
@@ -1171,7 +1143,6 @@ function getRangoLocalDia(fechaStr) {
 async function obtenerDatosResumenDia(fechaStr) {
   if (!supabaseReady) return null;
   const { inicioISO, finISO, fechaBonita } = getRangoLocalDia(fechaStr);
-  // Incluir metodo_pago en la selección
   const { data: comandas } = await supabase
     .from("comandas")
     .select("id, mesa, mesero, estado, updated_at, metodo_pago")
@@ -1210,7 +1181,6 @@ async function obtenerDatosResumenDia(fechaStr) {
     if (mesaNombre.includes("para llevar")) porTipoCuenta.llevar.total += total, porTipoCuenta.llevar.comandas++;
     else if (mesaNombre.includes("carrito")) porTipoCuenta.carrito.total += total, porTipoCuenta.carrito.comandas++;
     else porTipoCuenta.mesas.total += total, porTipoCuenta.mesas.comandas++;
-    // Agrupar por método de pago
     const metodo = com.metodo_pago || "no_definido";
     if (porMetodoPago[metodo]) {
       porMetodoPago[metodo].total += total;
@@ -1281,7 +1251,6 @@ async function descargarResumenPDF(fechaStr) {
     doc.save(`resumen_${data.fechaStr}_sin_ventas.pdf`);
     return;
   }
-  // Tabla por método de pago
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Ventas por método de pago",marginX,y);
   y+=10;
   const metodosBody = [];
@@ -1291,30 +1260,21 @@ async function descargarResumenPDF(fechaStr) {
   if (metodosBody.length === 0) metodosBody.push(["Sin datos", "0", formatMoney(0)]);
   doc.autoTable({...buildTableTheme(10), startY:y, head:[["Método","Cuentas","Total"]], body:metodosBody, columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
   y = doc.lastAutoTable.finalY+22;
-  
-  // Por tipo de cuenta
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Por tipo de cuenta",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(10), startY:y, head:[["Tipo","Cuentas","Total"]], body:[["Mesas",String(data.porTipoCuenta.mesas.comandas),formatMoney(data.porTipoCuenta.mesas.total)],["Para llevar",String(data.porTipoCuenta.llevar.comandas),formatMoney(data.porTipoCuenta.llevar.total)],["Carrito afuera",String(data.porTipoCuenta.carrito.comandas),formatMoney(data.porTipoCuenta.carrito.total)]], columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
   y = doc.lastAutoTable.finalY+22;
-  
-  // Ventas por mesero
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Ventas por mesero",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(10), startY:y, head:[["Mesero","Cuentas","Total"]], body:data.rankingMeseros.length?data.rankingMeseros.map(([m,i])=>[m,String(i.comandas),formatMoney(i.total)]):[["Sin registros","0",formatMoney(0)]], columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
   y = doc.lastAutoTable.finalY+22;
-  
-  // Lista detallada de comandas con método de pago
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Comandas cerradas (con método de pago)",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Cuenta","Mesero","Hora","Método","Total"]], body:data.detalleComandas.map(c=>[c.mesa,c.mesero,new Date(c.updated_at).toLocaleTimeString(),c.metodo_pago,formatMoney(c.total)]), columnStyles:{2:{halign:"center",cellWidth:80},3:{halign:"center",cellWidth:80},4:{halign:"right",cellWidth:90}} });
   y = doc.lastAutoTable.finalY+22;
-  
-  // Todos los productos
   doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("Todos los productos vendidos",marginX,y);
   y+=10;
   doc.autoTable({...buildTableTheme(9.5), startY:y, head:[["Producto","Cantidad","Total"]], body:data.todosProductos.map(([n,i])=>[n,String(i.qty),formatMoney(i.total)]), columnStyles:{1:{halign:"center",cellWidth:90},2:{halign:"right",cellWidth:110}} });
-  
   const totalPages = doc.internal.getNumberOfPages();
   for(let i=1;i<=totalPages;i++){ doc.setPage(i); doc.setFontSize(9); doc.setTextColor(...colors.muted); doc.text(`Página ${i} de ${totalPages}`,pageWidth-marginX,pageHeight-16,{align:"right"}); }
   doc.save(`resumen_ventas_${data.fechaStr}.pdf`);
