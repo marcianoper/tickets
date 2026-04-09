@@ -374,28 +374,6 @@ header {
   display: block;
 }
 
-/* Método de pago */
-.paymentMethodGrid {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.paymentMethodBtn {
-  flex: 1;
-  background: white;
-  border: 1px solid var(--border-light);
-  border-radius: 48px;
-  padding: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.2s;
-}
-.paymentMethodBtn:hover {
-  background: var(--primary-light);
-  transform: scale(0.98);
-}
-
 /* Detalle productos (acordeón dentro del modal) */
 .detailAccordion {
   border: 1px solid var(--border-light);
@@ -617,6 +595,12 @@ header {
           <div id="modalDetalleItems">Cargando...</div>
         </div>
       </div>
+      <label class="modalLabel">💰 Monto recibido (solo para efectivo)</label>
+      <input class="modalInput" id="mesaActionPago" type="number" step="0.01" placeholder="Ej: 500.00" value="">
+      <div id="mesaActionCambioBox" style="margin-top:16px; padding:12px; border-radius:32px; background:var(--bg-primary);">
+        <b>💵 Cambio</b>
+        <span id="mesaActionCambio" style="font-size:1.8rem; font-weight:800; display:block;">$0.00</span>
+      </div>
       <div class="actionButtons">
         <button class="actionBtn actionPrint" id="mesaActionPrintBtn">🖨️ Imprimir</button>
         <button class="actionBtn actionPay" id="mesaActionPayBtn">💵 Cobrar</button>
@@ -626,15 +610,15 @@ header {
   </div>
 </div>
 
-<!-- Modal método de pago -->
+<!-- Modal para seleccionar método de pago (aparece al hacer clic en Cobrar) -->
 <div class="backdrop" id="paymentMethodBackdrop">
   <div class="modal">
-    <div class="modalHead"><h3>Método de pago</h3></div>
+    <div class="modalHead"><h3>Selecciona método de pago</h3></div>
     <div class="modalBody">
-      <div class="paymentMethodGrid" id="paymentMethodGrid">
-        <button class="paymentMethodBtn" data-method="efectivo">💵 Efectivo</button>
-        <button class="paymentMethodBtn" data-method="tarjeta">💳 Tarjeta</button>
-        <button class="paymentMethodBtn" data-method="transferencia">🏦 Transferencia</button>
+      <div class="paymentMethodGrid" style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="paymentMethodBtn" data-method="efectivo" style="flex:1; background:var(--success); color:white; border:none; padding:14px; border-radius:48px; font-weight:700;">💵 Efectivo</button>
+        <button class="paymentMethodBtn" data-method="tarjeta" style="flex:1; background:var(--primary); color:white; border:none; padding:14px; border-radius:48px; font-weight:700;">💳 Tarjeta</button>
+        <button class="paymentMethodBtn" data-method="transferencia" style="flex:1; background:var(--warning); color:#5a3b00; border:none; padding:14px; border-radius:48px; font-weight:700;">🏦 Transferencia</button>
       </div>
     </div>
     <div class="modalFoot">
@@ -758,6 +742,8 @@ const toastEl = document.getElementById("toast");
 const mesaActionBackdrop = document.getElementById("mesaActionBackdrop");
 const mesaActionTitle = document.getElementById("mesaActionTitle");
 const mesaActionTotal = document.getElementById("mesaActionTotal");
+const mesaActionPago = document.getElementById("mesaActionPago");
+const mesaActionCambio = document.getElementById("mesaActionCambio");
 const mesaActionPrintBtn = document.getElementById("mesaActionPrintBtn");
 const mesaActionPayBtn = document.getElementById("mesaActionPayBtn");
 const mesaActionCancelBtn = document.getElementById("mesaActionCancelBtn");
@@ -766,7 +752,6 @@ const accordionContent = document.getElementById("accordionContent");
 const modalDetalleItems = document.getElementById("modalDetalleItems");
 
 const paymentMethodBackdrop = document.getElementById("paymentMethodBackdrop");
-const paymentMethodGrid = document.getElementById("paymentMethodGrid");
 const btnCancelPaymentMethod = document.getElementById("btnCancelPaymentMethod");
 
 const editPriceBackdrop = document.getElementById("editPriceBackdrop");
@@ -826,8 +811,8 @@ function renderDetalleProductosModal() {
         ${item.nota ? `<div style="font-size:12px; color:#666;">• ${escapeHtml(item.nota)}</div>` : ''}
         ${userRole === "admin" ? `
           <div class="admin-buttons">
-            <button class="admin-btn admin-edit" onclick="event.stopPropagation(); editarPrecio('${item.id}')">✏️ Precio</button>
-            <button class="admin-btn admin-delete" onclick="event.stopPropagation(); eliminarProducto('${item.id}')">🗑️ Eliminar</button>
+            <button class="admin-btn admin-edit" onclick="editarPrecio('${item.id}')">✏️ Precio</button>
+            <button class="admin-btn admin-delete" onclick="eliminarProducto('${item.id}')">🗑️ Eliminar</button>
           </div>
         ` : ''}
       </div>
@@ -836,7 +821,7 @@ function renderDetalleProductosModal() {
   modalDetalleItems.innerHTML = html;
 }
 
-// ==================== ADMIN FUNCTIONS ====================
+// ==================== ADMIN FUNCTIONS (sin alerts) ====================
 async function editarPrecio(itemId) {
   if (userRole !== "admin") return;
   const item = itemsActuales.find(i => i.id === itemId);
@@ -865,6 +850,7 @@ async function guardarPrecio() {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
+    calcularCambioModal();
   }
   editPriceBackdrop.style.display = "none";
   currentEditingItemId = null;
@@ -872,7 +858,6 @@ async function guardarPrecio() {
 
 async function eliminarProducto(itemId) {
   if (userRole !== "admin") return;
-  if (!confirm("¿Eliminar este producto de la cuenta?")) return;
   const { error } = await supabase.from("comandas_items").delete().eq("id", itemId);
   if (error) {
     showToast("Error al eliminar", "error");
@@ -883,6 +868,7 @@ async function eliminarProducto(itemId) {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
+    calcularCambioModal();
   }
 }
 
@@ -927,6 +913,7 @@ async function aplicarAjusteTotal() {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
+    calcularCambioModal();
   }
   adjustTotalBackdrop.style.display = "none";
 }
@@ -1019,6 +1006,8 @@ function renderMesas() {
         const total = getTotalCuenta();
         mesaActionTitle.textContent = `Cuenta - ${mesa}`;
         mesaActionTotal.textContent = money(total);
+        mesaActionPago.value = "";
+        calcularCambioModal();
         renderDetalleProductosModal();
         accordionContent.classList.remove("open");
         accordionHeader.querySelector("span:last-child").textContent = "▼";
@@ -1031,7 +1020,22 @@ function renderMesas() {
   });
 }
 
-// ========== FUNCIONES DE IMPRESIÓN OPTIMIZADAS PARA 58mm ==========
+function calcularCambioModal() {
+  const total = getTotalCuenta();
+  const pago = parseFloat(mesaActionPago.value);
+  if (isNaN(pago) || pago <= 0) {
+    mesaActionCambio.textContent = money(0);
+    document.getElementById("mesaActionCambioBox").style.background = "var(--bg-primary)";
+    return;
+  }
+  const cambio = pago - total;
+  mesaActionCambio.textContent = money(cambio);
+  const cambioBox = document.getElementById("mesaActionCambioBox");
+  if (cambio >= 0) cambioBox.style.background = "#e8f5e9";
+  else cambioBox.style.background = "#ffebee";
+}
+
+// Impresión (tamaño ajustado para 58mm)
 function buildCuentaPrint() {
   if (!comandaActual) return "";
   const total = getTotalCuenta();
@@ -1049,8 +1053,8 @@ function buildCuentaPrint() {
     const importe = Number(item.qty || 0) * precio;
     html += `
       <div style="margin:6px 0;">
-        <div style="font-weight:bold; font-size:18px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-        <div style="display:flex; justify-content:space-between; font-size:18px;">
+        <div style="font-weight:bold; font-size:16px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+        <div style="display:flex; justify-content:space-between; font-size:16px;">
           <span>${money(precio)} c/u</span>
           <span>${money(importe)}</span>
         </div>
@@ -1089,9 +1093,7 @@ function imprimirTicket() {
           line-height: 1.3;
           background: white;
         }
-        .ticket-content {
-          width: 100%;
-        }
+        .ticket-content { width: 100%; }
       </style>
     </head>
     <body>
@@ -1110,12 +1112,17 @@ function imprimirTicket() {
   ventana.document.close();
 }
 
-// ========== CIERRE DE CUENTA CON MÉTODO DE PAGO (automático) ==========
-async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
+// ========== CIERRE DE CUENTA CON MÉTODO DE PAGO (sin alerts) ==========
+async function cerrarCuentaConMetodo(paymentMethod) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
-  let pago = paymentMethod !== "efectivo" ? total : montoRecibido;
-  if (pago !== null && pago < total && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
+  let pago = null;
+  if (paymentMethod === "efectivo") {
+    pago = parseFloat(mesaActionPago.value);
+    if (isNaN(pago)) pago = 0;
+  } else {
+    pago = total;
+  }
   setSyncStatus(`Cerrando ${comandaActual.mesa}...`, "warn");
   try {
     const { error } = await supabase
@@ -1127,7 +1134,7 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
       })
       .eq("id", comandaActual.id);
     if (error) throw error;
-    const metodoTexto = { efectivo: "💵 Efectivo", tarjeta: "💳 Tarjeta", transferencia: "🏦 Transferencia" }[paymentMethod];
+    const metodoTexto = { efectivo: "Efectivo", tarjeta: "Tarjeta", transferencia: "Transferencia" }[paymentMethod];
     showToast(`✅ Cuenta ${comandaActual.mesa} cerrada. Método: ${metodoTexto}`, "success");
     mesaActionBackdrop.style.display = "none";
     comandaActual = null;
@@ -1138,30 +1145,30 @@ async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   } catch (error) { console.error(error); showToast("Error al cerrar la cuenta", "error"); }
 }
 
+// Mostrar modal de selección de método
 function mostrarSeleccionMetodo() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   paymentMethodBackdrop.style.display = "flex";
 }
 
-paymentMethodGrid.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".paymentMethodBtn");
-  if (!btn) return;
-  const method = btn.getAttribute("data-method");
-  paymentMethodBackdrop.style.display = "none";
-  if (method === "efectivo") {
-    let monto = prompt("Ingresa el monto recibido en efectivo:", "0");
-    if (monto === null) return;
-    monto = parseFloat(monto) || 0;
-    await cerrarCuentaConMetodo("efectivo", monto);
-  } else {
-    await cerrarCuentaConMetodo(method);
-  }
+// Event listeners para métodos de pago (dentro del modal de métodos)
+document.querySelectorAll('.paymentMethodBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const method = btn.getAttribute('data-method');
+    paymentMethodBackdrop.style.display = "none";
+    cerrarCuentaConMetodo(method);
+  });
 });
 
-btnCancelPaymentMethod.onclick = () => { paymentMethodBackdrop.style.display = "none"; };
+btnCancelPaymentMethod.onclick = () => {
+  paymentMethodBackdrop.style.display = "none";
+};
+
 mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPrintBtn.onclick = imprimirTicket;
+mesaActionPago.addEventListener("input", calcularCambioModal);
+
 accordionHeader.addEventListener("click", () => {
   const isOpen = accordionContent.classList.contains("open");
   if (isOpen) {
@@ -1173,7 +1180,53 @@ accordionHeader.addEventListener("click", () => {
   }
 });
 
-// ==================== RESUMEN PDF (sin cambios) ====================
+// Event listeners generales
+document.getElementById("btnCambiarModo").onclick = () => loginBackdrop.style.display = "flex";
+document.getElementById("btnCerrarLogin").onclick = () => loginBackdrop.style.display = "none";
+document.getElementById("btnEntrarLogin").onclick = () => {
+  const rol = loginRol.value;
+  if (rol === "admin" && loginPin.value !== ADMIN_PIN) { showToast("PIN incorrecto", "error"); return; }
+  userRole = rol;
+  roleInfo.textContent = `👤 Modo: ${userRole==="admin"?"Administrador 👑":"Operador"}`;
+  loginBackdrop.style.display = "none";
+  showToast(`Modo ${userRole==="admin"?"Administrador":"Operador"} activado`, "success");
+  if (comandaActual && mesaActionBackdrop.style.display === "flex") renderDetalleProductosModal();
+};
+document.getElementById("btnActualizarMesas").onclick = async () => { await cargarEstadoMesas(); };
+document.getElementById("btnResumen").onclick = () => {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear(), mm = String(hoy.getMonth()+1).padStart(2,"0"), dd = String(hoy.getDate()).padStart(2,"0");
+  fechaResumenInput.value = `${yyyy}-${mm}-${dd}`;
+  fechaResumenBackdrop.style.display = "flex";
+};
+document.getElementById("btnFechaResumenCancelar").onclick = () => fechaResumenBackdrop.style.display = "none";
+document.getElementById("btnFechaResumenEnviar").onclick = async () => {
+  const fecha = fechaResumenInput.value;
+  if (!fecha) { showToast("Selecciona una fecha", "error"); return; }
+  const btn = document.getElementById("btnFechaResumenEnviar");
+  const originalText = btn.textContent;
+  btn.textContent = "⏳ Generando PDF...";
+  btn.disabled = true;
+  try { await descargarResumenPDF(fecha); fechaResumenBackdrop.style.display = "none"; } catch(e) { console.error(e); showToast("Error al generar PDF", "error"); }
+  finally { btn.textContent = originalText; btn.disabled = false; }
+};
+loginRol.addEventListener("change", () => { pinWrap.style.display = loginRol.value === "admin" ? "block" : "none"; });
+btnTipoMesas.onclick = () => cambiarTipoVista("mesas");
+btnTipoLlevar.onclick = () => cambiarTipoVista("llevar");
+btnTipoCarrito.onclick = () => cambiarTipoVista("carrito");
+
+// Admin modals
+btnCancelPrice.onclick = () => editPriceBackdrop.style.display = "none";
+btnConfirmPrice.onclick = guardarPrecio;
+btnCancelAdjust.onclick = () => adjustTotalBackdrop.style.display = "none";
+btnConfirmAdjust.onclick = aplicarAjusteTotal;
+
+// Exponer funciones globales para admin
+window.editarPrecio = editarPrecio;
+window.eliminarProducto = eliminarProducto;
+window.mostrarAjusteTotal = mostrarAjusteTotal;
+
+// Funciones resumen PDF (sin cambios en funcionalidad, solo sin alerts)
 function getRangoLocalDia(fechaStr) {
   const [y,m,d] = fechaStr.split("-").map(Number);
   const inicio = new Date(y,m-1,d,0,0,0,0);
@@ -1322,14 +1375,6 @@ async function descargarResumenPDF(fechaStr) {
   showToast("✅ PDF generado correctamente", "success");
 }
 
-function openFechaResumenModal() {
-  const hoy = new Date();
-  const yyyy = hoy.getFullYear(), mm = String(hoy.getMonth()+1).padStart(2,"0"), dd = String(hoy.getDate()).padStart(2,"0");
-  fechaResumenInput.value = `${yyyy}-${mm}-${dd}`;
-  fechaResumenBackdrop.style.display = "flex";
-}
-function closeFechaResumenModal() { fechaResumenBackdrop.style.display = "none"; }
-
 async function cambiarTipoVista(nuevoTipo) {
   tipoVista = nuevoTipo;
   mesaActual = "";
@@ -1340,47 +1385,6 @@ async function cambiarTipoVista(nuevoTipo) {
   btnTipoCarrito.classList.toggle("active", tipoVista==="carrito");
   await cargarEstadoMesas();
 }
-
-// Event listeners
-document.getElementById("btnCambiarModo").onclick = () => loginBackdrop.style.display = "flex";
-document.getElementById("btnCerrarLogin").onclick = () => loginBackdrop.style.display = "none";
-document.getElementById("btnEntrarLogin").onclick = () => {
-  const rol = loginRol.value;
-  if (rol === "admin" && loginPin.value !== ADMIN_PIN) { showToast("PIN incorrecto", "error"); return; }
-  userRole = rol;
-  roleInfo.textContent = `👤 Modo: ${userRole==="admin"?"Administrador 👑":"Operador"}`;
-  loginBackdrop.style.display = "none";
-  showToast(`Modo ${userRole==="admin"?"Administrador":"Operador"} activado`, "success");
-  if (comandaActual && mesaActionBackdrop.style.display === "flex") renderDetalleProductosModal();
-};
-document.getElementById("btnActualizarMesas").onclick = async () => { await cargarEstadoMesas(); };
-document.getElementById("btnResumen").onclick = openFechaResumenModal;
-document.getElementById("btnFechaResumenCancelar").onclick = closeFechaResumenModal;
-document.getElementById("btnFechaResumenEnviar").onclick = async () => {
-  const fecha = fechaResumenInput.value;
-  if (!fecha) { showToast("Selecciona una fecha", "error"); return; }
-  const btn = document.getElementById("btnFechaResumenEnviar");
-  const originalText = btn.textContent;
-  btn.textContent = "⏳ Generando PDF...";
-  btn.disabled = true;
-  try { await descargarResumenPDF(fecha); closeFechaResumenModal(); } catch(e) { console.error(e); showToast("Error al generar PDF", "error"); }
-  finally { btn.textContent = originalText; btn.disabled = false; }
-};
-loginRol.addEventListener("change", () => { pinWrap.style.display = loginRol.value === "admin" ? "block" : "none"; });
-btnTipoMesas.onclick = () => cambiarTipoVista("mesas");
-btnTipoLlevar.onclick = () => cambiarTipoVista("llevar");
-btnTipoCarrito.onclick = () => cambiarTipoVista("carrito");
-
-// Admin modals
-btnCancelPrice.onclick = () => editPriceBackdrop.style.display = "none";
-btnConfirmPrice.onclick = guardarPrecio;
-btnCancelAdjust.onclick = () => adjustTotalBackdrop.style.display = "none";
-btnConfirmAdjust.onclick = aplicarAjusteTotal;
-
-// Exponer funciones globales para admin
-window.editarPrecio = editarPrecio;
-window.eliminarProducto = eliminarProducto;
-window.mostrarAjusteTotal = mostrarAjusteTotal;
 
 // Inicialización
 if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
