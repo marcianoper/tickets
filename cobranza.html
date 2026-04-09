@@ -1053,8 +1053,8 @@ function buildCuentaPrint() {
     const importe = Number(item.qty || 0) * precio;
     html += `
       <div style="margin:6px 0;">
-        <div style="font-weight:bold; font-size:16px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-        <div style="display:flex; justify-content:space-between; font-size:16px;">
+        <div style="font-weight:bold; font-size:15px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+        <div style="display:flex; justify-content:space-between; font-size:15px;">
           <span>${money(precio)} c/u</span>
           <span>${money(importe)}</span>
         </div>
@@ -1168,6 +1168,13 @@ mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPrintBtn.onclick = imprimirTicket;
 mesaActionPago.addEventListener("input", calcularCambioModal);
+// Agregamos el evento para ocultar teclado al presionar Enter
+mesaActionPago.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    this.blur();
+  }
+});
 
 accordionHeader.addEventListener("click", () => {
   const isOpen = accordionContent.classList.contains("open");
