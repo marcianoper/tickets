@@ -617,12 +617,6 @@ header {
           <div id="modalDetalleItems">Cargando...</div>
         </div>
       </div>
-      <label class="modalLabel">💰 Monto recibido (solo para efectivo)</label>
-      <input class="modalInput" id="mesaActionPago" type="number" step="0.01" placeholder="Ej: 500.00">
-      <div id="mesaActionCambioBox" style="margin-top:16px; padding:12px; border-radius:32px; background:var(--bg-primary);">
-        <b>💵 Cambio</b>
-        <span id="mesaActionCambio" style="font-size:1.8rem; font-weight:800; display:block;">$0.00</span>
-      </div>
       <div class="actionButtons">
         <button class="actionBtn actionPrint" id="mesaActionPrintBtn">🖨️ Imprimir</button>
         <button class="actionBtn actionPay" id="mesaActionPayBtn">💵 Cobrar</button>
@@ -664,7 +658,7 @@ header {
   </div>
 </div>
 
-<!-- Modal ajuste total -->
+<!-- Modal ajuste total (descuento/recargo) -->
 <div class="backdrop" id="adjustTotalBackdrop">
   <div class="modal">
     <div class="modalHead"><h3>Ajustar total de la cuenta</h3></div>
@@ -764,8 +758,6 @@ const toastEl = document.getElementById("toast");
 const mesaActionBackdrop = document.getElementById("mesaActionBackdrop");
 const mesaActionTitle = document.getElementById("mesaActionTitle");
 const mesaActionTotal = document.getElementById("mesaActionTotal");
-const mesaActionPago = document.getElementById("mesaActionPago");
-const mesaActionCambio = document.getElementById("mesaActionCambio");
 const mesaActionPrintBtn = document.getElementById("mesaActionPrintBtn");
 const mesaActionPayBtn = document.getElementById("mesaActionPayBtn");
 const mesaActionCancelBtn = document.getElementById("mesaActionCancelBtn");
@@ -815,18 +807,7 @@ function getTotalCuenta() {
   return itemsActuales.reduce((sum, item) => sum + (Number(item.qty || 0) * getPrecioUnitario(item)), 0);
 }
 
-function calcularCambioModal() {
-  const total = getTotalCuenta();
-  const pago = parseFloat(mesaActionPago.value) || 0;
-  const cambio = pago - total;
-  mesaActionCambio.textContent = money(cambio);
-  const cambioBox = document.getElementById("mesaActionCambioBox");
-  if (cambio >= 0 && pago > 0) cambioBox.style.background = "#e8f5e9";
-  else if (pago > 0 && cambio < 0) cambioBox.style.background = "#ffebee";
-  else cambioBox.style.background = "var(--bg-primary)";
-}
-
-// ==================== RENDER DE DETALLE DENTRO DEL MODAL ====================
+// ==================== RENDER DE DETALLE DENTRO DEL MODAL (con botones admin) ====================
 function renderDetalleProductosModal() {
   if (!comandaActual || !itemsActuales.length) {
     modalDetalleItems.innerHTML = '<div style="padding:12px; text-align:center;">No hay productos en esta cuenta.</div>';
@@ -884,7 +865,6 @@ async function guardarPrecio() {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
-    calcularCambioModal();
   }
   editPriceBackdrop.style.display = "none";
   currentEditingItemId = null;
@@ -903,7 +883,6 @@ async function eliminarProducto(itemId) {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
-    calcularCambioModal();
   }
 }
 
@@ -948,7 +927,6 @@ async function aplicarAjusteTotal() {
     renderDetalleProductosModal();
     const total = getTotalCuenta();
     mesaActionTotal.textContent = money(total);
-    calcularCambioModal();
   }
   adjustTotalBackdrop.style.display = "none";
 }
@@ -1041,9 +1019,6 @@ function renderMesas() {
         const total = getTotalCuenta();
         mesaActionTitle.textContent = `Cuenta - ${mesa}`;
         mesaActionTotal.textContent = money(total);
-        mesaActionPago.value = "";
-        mesaActionCambio.textContent = money(0);
-        document.getElementById("mesaActionCambioBox").style.background = "var(--bg-primary)";
         renderDetalleProductosModal();
         accordionContent.classList.remove("open");
         accordionHeader.querySelector("span:last-child").textContent = "▼";
@@ -1056,54 +1031,91 @@ function renderMesas() {
   });
 }
 
-// ==================== IMPRESIÓN TAMAÑO GRANDE ====================
+// ========== FUNCIONES DE IMPRESIÓN OPTIMIZADAS PARA 58mm ==========
 function buildCuentaPrint() {
   if (!comandaActual) return "";
   const total = getTotalCuenta();
-  let html = `<div style="text-align:center; font-weight:900; font-size:36px; margin-bottom:16px;">GUADALUPE VICTORIA</div>
-    <div style="text-align:center; font-weight:900; font-size:30px; margin-bottom:8px;">${escapeHtml(comandaActual.mesa)}</div>
-    <div style="text-align:center; font-size:18px; margin-bottom:4px;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
-    <div style="text-align:center; font-size:16px; margin-bottom:12px;">${new Date().toLocaleString()}</div>
-    <div style="border-top:3px dashed #000; margin:12px 0;"></div>`;
+  let html = `
+    <div style="text-align:center; margin-bottom:8px;">
+      <div style="font-weight:900; font-size:14px;">GUADALUPE VICTORIA</div>
+      <div style="font-weight:bold; font-size:12px;">${escapeHtml(comandaActual.mesa)}</div>
+      <div style="font-size:10px;">Mesero: ${escapeHtml(comandaActual.mesero || "—")}</div>
+      <div style="font-size:9px;">${new Date().toLocaleString()}</div>
+    </div>
+    <div style="border-top:1px dashed #000; margin:6px 0;"></div>
+  `;
   itemsActuales.forEach(item => {
     const precio = getPrecioUnitario(item);
     const importe = Number(item.qty || 0) * precio;
-    html += `<div style="margin:12px 0;">
-        <div style="font-weight:900; font-size:24px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-        <div style="display:flex; justify-content:space-between; font-size:22px; margin-top:4px;">
+    html += `
+      <div style="margin:6px 0;">
+        <div style="font-weight:bold; font-size:12px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+        <div style="display:flex; justify-content:space-between; font-size:10px;">
           <span>${money(precio)} c/u</span>
-          <span style="font-weight:700;">${money(importe)}</span>
+          <span>${money(importe)}</span>
         </div>
-      </div>`;
+      </div>
+    `;
   });
-  html += `<div style="border-top:3px dashed #000; margin:16px 0;"></div>
-    <div style="display:flex; justify-content:space-between; font-size:44px; font-weight:900; margin-top:8px;">
+  html += `
+    <div style="border-top:1px dashed #000; margin:6px 0;"></div>
+    <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:900; margin-top:6px;">
       <span>TOTAL</span><span>${money(total)}</span>
     </div>
-    <div style="text-align:center; margin-top:24px; font-size:20px;">¡Gracias por su visita!</div>`;
+    <div style="text-align:center; margin-top:10px; font-size:10px;">¡Gracias por su visita!</div>
+  `;
   return html;
 }
 
 function imprimirTicket() {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const contenido = buildCuentaPrint();
-  const ventana = window.open('', '_blank', 'width=600,height=800');
+  const ventana = window.open('', '_blank', 'width=300,height=500');
   if (!ventana) { showToast("Permite ventanas emergentes para imprimir", "error"); return; }
-  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ticket - ${comandaActual.mesa}</title><style>
-    @page { size: 120mm auto; margin: 5mm; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; width: 100%; margin: 0 auto; background: white; }
-    </style></head><body>${contenido}<script>
-    window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 1500); }, 400); };
-    <\/script></body></html>`);
+  ventana.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Ticket</title>
+      <style>
+        @page { size: 58mm auto; margin: 2mm; }
+        body {
+          font-family: monospace;
+          width: 58mm;
+          margin: 0 auto;
+          padding: 2mm;
+          font-size: 11px;
+          line-height: 1.3;
+          background: white;
+        }
+        .ticket-content {
+          width: 100%;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="ticket-content">${contenido}</div>
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+            setTimeout(function() { window.close(); }, 1000);
+          }, 200);
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
   ventana.document.close();
 }
 
-// ==================== CIERRE DE CUENTA USANDO EL MONTO INGRESADO ====================
-async function cerrarCuentaConMetodo(paymentMethod) {
+// ========== CIERRE DE CUENTA CON MÉTODO DE PAGO (automático) ==========
+async function cerrarCuentaConMetodo(paymentMethod, montoRecibido = null) {
   if (!comandaActual) { showToast("No hay cuenta cargada", "error"); return; }
   const total = getTotalCuenta();
-  let pago = (paymentMethod === "efectivo") ? parseFloat(mesaActionPago.value) || 0 : total;
-  if (pago < total && paymentMethod === "efectivo" && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
+  let pago = paymentMethod !== "efectivo" ? total : montoRecibido;
+  if (pago !== null && pago < total && !confirm(`El pago (${money(pago)}) es menor al total (${money(total)}). ¿Deseas continuar?`)) return;
   setSyncStatus(`Cerrando ${comandaActual.mesa}...`, "warn");
   try {
     const { error } = await supabase
@@ -1131,28 +1143,33 @@ function mostrarSeleccionMetodo() {
   paymentMethodBackdrop.style.display = "flex";
 }
 
-// Manejo de clic en método de pago
 paymentMethodGrid.addEventListener("click", async (e) => {
   const btn = e.target.closest(".paymentMethodBtn");
   if (!btn) return;
   const method = btn.getAttribute("data-method");
   paymentMethodBackdrop.style.display = "none";
-  await cerrarCuentaConMetodo(method);
+  if (method === "efectivo") {
+    let monto = prompt("Ingresa el monto recibido en efectivo:", "0");
+    if (monto === null) return;
+    monto = parseFloat(monto) || 0;
+    await cerrarCuentaConMetodo("efectivo", monto);
+  } else {
+    await cerrarCuentaConMetodo(method);
+  }
 });
 
-btnCancelPaymentMethod.onclick = () => {
-  paymentMethodBackdrop.style.display = "none";
-};
-
+btnCancelPaymentMethod.onclick = () => { paymentMethodBackdrop.style.display = "none"; };
 mesaActionPayBtn.onclick = mostrarSeleccionMetodo;
 mesaActionCancelBtn.onclick = () => mesaActionBackdrop.style.display = "none";
 mesaActionPrintBtn.onclick = imprimirTicket;
-mesaActionPago.addEventListener("input", calcularCambioModal);
-// NUEVO: ocultar teclado al presionar Enter en el campo de monto
-mesaActionPago.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    mesaActionPago.blur();  // oculta el teclado
+accordionHeader.addEventListener("click", () => {
+  const isOpen = accordionContent.classList.contains("open");
+  if (isOpen) {
+    accordionContent.classList.remove("open");
+    accordionHeader.querySelector("span:last-child").textContent = "▼";
+  } else {
+    accordionContent.classList.add("open");
+    accordionHeader.querySelector("span:last-child").textContent = "▲";
   }
 });
 
@@ -1325,11 +1342,6 @@ async function cambiarTipoVista(nuevoTipo) {
 }
 
 // Event listeners
-accordionHeader.addEventListener("click", () => {
-  const isOpen = accordionContent.classList.contains("open");
-  if (isOpen) { accordionContent.classList.remove("open"); accordionHeader.querySelector("span:last-child").textContent = "▼"; }
-  else { accordionContent.classList.add("open"); accordionHeader.querySelector("span:last-child").textContent = "▲"; }
-});
 document.getElementById("btnCambiarModo").onclick = () => loginBackdrop.style.display = "flex";
 document.getElementById("btnCerrarLogin").onclick = () => loginBackdrop.style.display = "none";
 document.getElementById("btnEntrarLogin").onclick = () => {
