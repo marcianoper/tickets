@@ -1049,8 +1049,8 @@ function buildCuentaPrint() {
     const importe = Number(item.qty || 0) * precio;
     html += `
       <div style="margin:6px 0;">
-        <div style="font-weight:bold; font-size:18px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
-        <div style="display:flex; justify-content:space-between; font-size:18px;">
+        <div style="font-weight:bold; font-size:23px;">${escapeHtml(item.qty)} x ${escapeHtml(item.producto_nombre)}</div>
+        <div style="display:flex; justify-content:space-between; font-size:23px;">
           <span>${money(precio)} c/u</span>
           <span>${money(importe)}</span>
         </div>
