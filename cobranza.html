@@ -529,6 +529,7 @@ header {
       <div class="sub">Gestión de cuentas | Mesas, para llevar y carrito</div>
     </div>
     <div class="header-actions">
+      <button class="btn-header" id="btnProductos">📦 Productos</button>
       <button class="btn-header" id="btnResumen">📊 Resumen</button>
       <button class="btn-header" id="btnActualizarMesas">🔄 Actualizar</button>
     </div>
@@ -778,7 +779,14 @@ const btnTipoLlevar = document.getElementById("btnTipoLlevar");
 const btnTipoCarrito = document.getElementById("btnTipoCarrito");
 
 // ==================== FUNCIONES AUXILIARES ====================
-function money(n) { return "$" + Number(n || 0).toFixed(2); }
+// Función money con separadores de miles (comas)
+function money(n) {
+  let num = Number(n || 0).toFixed(2);
+  let parts = num.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return "$" + parts.join('.');
+}
+
 function escapeHtml(s) { return String(s || "").replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 function setSyncStatus(text, type) { syncStatus.textContent = text; syncStatus.className = `syncStatus ${type}`; }
 function showToast(message, type = "success") { toastEl.textContent = message; toastEl.className = `toast ${type}`; toastEl.classList.add("show"); setTimeout(() => toastEl.classList.remove("show"), 3000); }
@@ -1206,6 +1214,10 @@ document.getElementById("btnResumen").onclick = () => {
   fechaResumenInput.value = `${yyyy}-${mm}-${dd}`;
   fechaResumenBackdrop.style.display = "flex";
 };
+// Botón Productos
+document.getElementById("btnProductos").onclick = () => {
+  window.open("https://picapiedra.org/mesero/mesas", "_blank");
+};
 document.getElementById("btnFechaResumenCancelar").onclick = () => fechaResumenBackdrop.style.display = "none";
 document.getElementById("btnFechaResumenEnviar").onclick = async () => {
   const fecha = fechaResumenInput.value;
@@ -1233,7 +1245,7 @@ window.editarPrecio = editarPrecio;
 window.eliminarProducto = eliminarProducto;
 window.mostrarAjusteTotal = mostrarAjusteTotal;
 
-// Funciones resumen PDF (sin cambios en funcionalidad, solo sin alerts)
+// Funciones resumen PDF (con separadores de miles)
 function getRangoLocalDia(fechaStr) {
   const [y,m,d] = fechaStr.split("-").map(Number);
   const inicio = new Date(y,m-1,d,0,0,0,0);
